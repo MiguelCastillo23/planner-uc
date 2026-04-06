@@ -17,6 +17,7 @@ Aunque ambos trabajaremos como desarrolladores Full-stack debido a la naturaleza
 | :--- | :--- | :--- |
 | **Miguel Angel Castillo** | Scrum Master / Backend Developer | Gestión de la metodología Scrum, diseño de la base de datos MongoDB, lógica del motor de optimización (CSP) y seguridad (OWASP). |
 | **Alain Aliaga Eulogio** | Product Owner / Frontend Developer | Definición de historias de usuario, desarrollo de la interfaz en React, validación de usabilidad (ISO 25010) y accesibilidad (WCAG). |
+| **Erick Sanchez Vicente** | Product Owner / Frontend Developer | Definición de historias de usuario, desarrollo de la interfaz en React, validación de usabilidad (ISO 25010) y accesibilidad (WCAG). |
 
 ---
 
