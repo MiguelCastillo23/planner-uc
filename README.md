@@ -5,6 +5,7 @@ Este proyecto es el resultado del **Proyecto de Fin de Asignatura (PFA)** para e
 ## Integrantes del Equipo
 * Miguel Angel Castillo Rojas
 * Alain Aliaga Eulogio
+* Erick Sanchez Vicente
 
 ---
 
