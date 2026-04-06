@@ -30,4 +30,9 @@ A continuación, se presenta el índice dinámico de los documentos de gestión 
 * **Metodología:** Scrum
 
 ---
+
+## 🔗 Anexos
+* **Jira** https://continental-poyectos2.atlassian.net/jira/software/projects/TC/boards/1/backlog?epics=visible&atlOrigin=eyJpIjoiZDI2ZDJjZGQ1OTJkNDZlZDllNWI4ODAxNjczMjE1ZDIiLCJwIjoiaiJ9
+
+---
 *Ciclo Académico 2026-01 - Universidad Continental, Huancayo.*
