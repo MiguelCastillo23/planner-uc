@@ -5,6 +5,7 @@
 **Equipo:** 
 * Miguel Angel Castillo Rojas 
 * Alain Aliaga Eulogio
+* Erick Sanchez Vicente
 
 **Fecha:** 30 de marzo de 2026
 
