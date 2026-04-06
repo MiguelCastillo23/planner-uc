@@ -35,7 +35,7 @@ Desarrollo de un Producto Mínimo Viable (PMV) basado en el **Stack MERN (MongoD
 
 ## Resumen de Hitos y Criterios de Éxito:
 
-| Hito (Milestone) | Criterio de Éxito |
+| Hito | Criterio de Éxito |
 | :--- | :--- |
 | **Alcance (Scope)** | Cumplimiento del 100% de los requerimientos funcionales del PMV. |
 | **Tiempo (Time)** | Finalización del proyecto antes de la primera semana de julio 2026. |
@@ -48,12 +48,12 @@ Desarrollo de un Producto Mínimo Viable (PMV) basado en el **Stack MERN (MongoD
 * **Hito 3:** Desarrollo del Backend (Node/Express/Mongo) y lógica de negocio: **11/05/2026**
 * **Hito 4:** Desarrollo del Frontend (React) y motor de generación: **01/06/2026**
 * **Hito 5:** Pruebas integrales, ajustes de seguridad y Green Software: **22/06/2026**
-* **Hito 6:** Entrega Final del PMV (v1.0.0), video y cierre del ciclo: **05/07/2026**
+* **Hito 6:** Entrega Final del PMV, video y cierre del ciclo: **05/07/2026**
 
 ## Recursos Financieros Preaprobados:
 * Recursos de infraestructura en la nube (Tier Free) y herramientas de desarrollo Open Source.
 
-## Interesados (Stakeholders) y Roles:
+## Interesados y Roles:
 * **Estudiantes:** Usuarios que requieren horarios válidos y sin cruces.
 * **Docentes:** Proveedores de disponibilidad horaria.
 * **Coordinadores Académicos:** Supervisores de la planificación académica.

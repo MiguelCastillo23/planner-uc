@@ -2,7 +2,9 @@
 
 **Proyecto:** Sistema de Generación Óptima de Horarios Académicos
 
-**Equipo:** Miguel Angel Castillo Rojas / Alain Aliaga Eulogio
+**Equipo:** 
+* Miguel Angel Castillo Rojas 
+* Alain Aliaga Eulogio
 
 **Fecha:** 30 de marzo de 2026
 

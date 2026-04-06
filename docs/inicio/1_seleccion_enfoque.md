@@ -20,7 +20,7 @@ El proyecto aborda la planificación de horarios en universidades con currículo
 Para la gestión del proyecto, se ha seleccionado el marco de trabajo **Scrum**.
 
 ### Comparativa de Metodologías
-| Criterio | Scrum (Seleccionado) | Cascada (Waterfall) |
+| Criterio | Scrum | Cascada  |
 | :--- | :--- | :--- |
 | **Adaptabilidad** | Alta; ideal para requisitos parcialmente definidos. | Baja; rígida ante cambios. |
 | **Entrega de Valor** | Incremental mediante Sprints. | Única al final del proyecto. |
@@ -30,18 +30,18 @@ Para la gestión del proyecto, se ha seleccionado el marco de trabajo **Scrum**.
 
 ---
 
-## 3. Selección del Enfoque Tecnológico (Stack MERN)
+## 3. Selección del Enfoque Tecnológico
 Se ha optado por una arquitectura de Aplicación Web Moderna basada en el **Stack MERN**, garantizando un desarrollo homogéneo utilizando JavaScript en todas las capas.
 
-### 3.1. Frontend (Capa de Presentación)
+### 3.1. Frontend
 * **Tecnología:** **React.js**
 * **Justificación:** Permite crear una interfaz de usuario dinámica y reactiva para la visualización de horarios. Facilita la implementación de estándares de usabilidad ISO/IEC 25010 y accesibilidad WCAG.
 
-### 3.2. Backend (Capa de Negocio)
+### 3.2. Backend
 * **Tecnología:** **Node.js y Express.js**
 * **Justificación:** Express proporciona una estructura ligera para construir la API REST que procesará las peticiones del motor de horarios, aprovechando la naturaleza no bloqueante de Node.js para manejar múltiples consultas simultáneas.
 
-### 3.3. Base de Datos (Capa de Datos)
+### 3.3. Base de Datos
 * **Tecnología:** **MongoDB**
 * **Justificación:** Su modelo de documentos flexible es ideal para manejar estructuras de horarios que pueden variar en atributos, además de facilitar el escalamiento horizontal durante las pruebas del PMV.
 

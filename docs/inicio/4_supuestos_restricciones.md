@@ -1,6 +1,6 @@
 # REGISTRO DE SUPUESTOS Y RESTRICCIONES
 
-**Proyecto:** Sistema de Generación Óptima de Horarios Académicos (Stack MERN)
+**Proyecto:** Sistema de Generación Óptima de Horarios Académicos
 
 **Equipo:** Miguel Angel Castillo Rojas / Alain Aliaga Eulogio
 
@@ -26,9 +26,9 @@ Las restricciones son limitaciones obligatorias que el equipo debe respetar estr
 
 | ID | Categoría | Detalle de la Restricción |
 | :--- | :--- | :--- |
-| **R01** | Tiempo | La entrega final y sustentación debe realizarse en la **primera semana de julio de 2026** (Ciclo 2026-01). |
+| **R01** | Tiempo | La entrega final y sustentación debe realizarse en la **primera semana de julio de 2026**  |
 | **R02** | Negocio | El sistema debe validar obligatoriamente que el alumno se matricule entre **20 y 22 créditos**. |
-| **R03** | Algorítmica | Ningún horario generado puede tener solapamientos de docente, aula o estudiante (Restricción Dura). |
+| **R03** | Algorítmica | Ningún horario generado puede tener solapamientos de docente, aula o estudiante |
 | **R04** | Seguridad | Implementación obligatoria de validaciones basadas en el estándar **OWASP Top 10**. |
 | **R05** | Calidad | El software debe alinearse a los criterios de mantenibilidad de la norma **ISO/IEC 25010**. |
 | **R06** | Sostenibilidad | Uso de principios de **Green Software** para optimizar el consumo de CPU en el backend de Node.js. |

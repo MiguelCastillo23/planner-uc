@@ -1,6 +1,6 @@
 # DECLARACIÓN DEL EQUIPO DEL PROYECTO
 
-**Proyecto:** Sistema de Generación Óptima de Horarios Académicos (Stack MERN)
+**Proyecto:** Sistema de Generación Óptima de Horarios Académicos
 
 **Equipo de Desarrollo:** 
 * Miguel Angel Castillo Rojas
@@ -10,8 +10,8 @@
 
 ---
 
-## 1. Roles y Responsabilidades (Enfoque Scrum)
-Aunque ambos trabajaremos como desarrolladores Full-stack debido a la naturaleza del equipo (2 personas), hemos definido responsabilidades principales para asegurar el orden:
+## 1. Roles y Responsabilidades
+Aunque ambos trabajaremos como desarrolladores Full-stack debido a la naturaleza del equipo, hemos definido responsabilidades principales para asegurar el orden:
 
 | integrante | Rol Principal | Responsabilidades Clave |
 | :--- | :--- | :--- |
@@ -20,7 +20,7 @@ Aunque ambos trabajaremos como desarrolladores Full-stack debido a la naturaleza
 
 ---
 
-## 2. Normas de Trabajo (Team Charter)
+## 2. Normas de Trabajo
 Para garantizar una colaboración efectiva y cumplir con las exigencias del curso, establecemos las siguientes reglas:
 
 ### 2.1. Comunicación y Reuniones
@@ -28,8 +28,8 @@ Para garantizar una colaboración efectiva y cumplir con las exigencias del curs
 * **Sincronización:** Reuniones breves (Daily) de 15 minutos al final del día para revisar avances y bloqueos.
 * **Sesiones de Cómputo:** Mínimo dos sesiones semanales de trabajo conjunto para integración de módulos críticos.
 
-### 2.2. Gestión del Repositorio (GitHub)
-* **Flujo de Trabajo:** Se utilizará *GitHub Flow* (ramas por funcionalidad/feature).
+### 2.2. Gestión del Repositorio
+* **Flujo de Trabajo:** Se utilizará *GitHub Flow* y *GitHub Graph*
 * **Commits:** Deben ser semánticos (ej: `feat:`, `fix:`, `docs:`) y descriptivos. 
 * **Frecuencia:** Se garantiza un mínimo de 5 commits semanales por integrante para evidenciar desarrollo incremental.
 * **Revisión:** Ningún cambio se fusionará a la rama `main` sin haber sido revisado brevemente por el otro compañero.
