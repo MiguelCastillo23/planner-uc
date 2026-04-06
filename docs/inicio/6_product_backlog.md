@@ -1,4 +1,4 @@
-# PRODUCT BACKLOG INICIAL (PBI)
+# PRODUCT BACKLOG
 
 **Proyecto:** Sistema de Generación Óptima de Horarios Académicos
 
@@ -19,19 +19,20 @@ Para organizar el desarrollo del PMV, se han definido 4 épicas alineadas con lo
 
 ---
 
-## 2. Historias de Usuario y Tareas Técnicas (PBI)
+## 2. Historias de Usuario y Tareas Técnicas
 
 
-| ID | Título | Descripción | Prioridad | Épica |
+| ID | Título | Historia de Usuario | Prioridad | Épica |
 | :--- | :--- | :--- | :--- | :--- |
-| **PBI-01** | Arquitectura Base MERN | Configurar el servidor Node/Express y la conexión a MongoDB Atlas siguiendo el diseño de arquitectura. | Alta | E01 |
-| **PBI-02** | Registro de Entidades Base | Como **Administrador**, quiero registrar docentes, aulas y cursos para alimentar el modelo de datos. | Alta | E01 |
-| **PBI-03** | Validación de Carga Académica | Como **Sistema**, debo restringir la matrícula a un rango de **[20-22] créditos** por estudiante. | Crítica | E02 |
-| **PBI-04** | Algoritmo de No Solapamiento | Como **Coordinador**, quiero que el sistema garantice cero cruces de horario entre docentes y aulas mediante CSP. | Crítica | E02 |
-| **PBI-05** | Gestión de Disponibilidad | Como **Docente**, quiero ingresar mis franjas horarias disponibles para ser considerado en la generación. | Alta | E03 |
-| **PBI-06** | Dashboard de Visualización | Como **Estudiante**, quiero ver mi horario generado en una tabla interactiva para validar mis cursos. | Media | E03 |
-| **PBI-07** | Seguridad y Autenticación | Implementar JWT y protección contra ataques (OWASP Top 10) para resguardar datos académicos. | Alta | E04 |
-| **PBI-08** | Optimización de Recursos (Green SW) | Refactorizar el motor de búsqueda para reducir el consumo de CPU y mejorar la eficiencia energética. | Media | E04 |
+| **HU-001** | **Gestión de Recursos Académicos** | Como **Administrador**, quiero registrar aulas y cursos para centralizar la base de datos del semestre. | Alta | **E01** |
+| **HU-002** | **Asignación de Carga Académica** | Como **Administrador**, quiero vincular a cada docente con sus materias para definir quién es apto para dictarlas. | Alta | **E01** |
+| **HU-003** | **Generación Automatizada** | Como **Administrador**, quiero ejecutar el motor de optimización para obtener una propuesta de horario sin cruces. | Crítica | **E02** |
+| **HU-004** | **Control de Reglas y Créditos** | Como **Administrador**, quiero establecer límites de créditos por alumno para cumplir la normativa académica. | Crítica | **E02** |
+| **HU-005** | **Registro de Disponibilidad** | Como **Docente**, quiero ingresar mis franjas horarias disponibles para que el sistema las respete al generar el horario. | Alta | **E03** |
+| **HU-006** | **Visualización de Horario** | Como **Alumno**, quiero consultar mi horario generado en una tabla interactiva para organizar mi semestre. | Media | **E03** |
+| **HU-007** | **Acceso Seguro al Perfil** | Como **Usuario (Administrador/Docente/Alumno)**, quiero iniciar sesión con mis credenciales para proteger mi información. | Alta | **E04** |
+| **HU-008** | **Reporte de Uso de Espacios** | Como **Administrador**, quiero ver un reporte de eficiencia de aulas para maximizar el uso de recursos y reducir el consumo energético. | Media | **E04** |
+
 
 ---
 
@@ -42,8 +43,49 @@ Para organizar el desarrollo del PMV, se han definido 4 épicas alineadas con lo
 
 ---
 
-## 4. Planificación del Sprint 1
-En el primer Sprint después del inicio, nos enfocaremos en:
-1. Instalación de dependencias (React, Express, Mongoose).
-2. Modelado de esquemas en MongoDB para Estudiantes, Docentes y Aulas.
-3. Primer endpoint de validación de créditos
+## 4. Planificación de Sprints
+
+### Versión 1.0.0 (MVP - Mínimo Producto Viable)
+
+#### **Sprint 1: Cimientos y Gestión de Datos**
+
+| ID | Historia de Usuario | Responsable | Entregable |
+| :--- | :--- | :--- | :--- |
+| **HU-001** | Gestión de Recursos Académicos | Administrador | CRUD de aulas y cursos en MongoDB. |
+| **HU-002** | Asignación de Carga Académica | Administrador | Relación lógica Docente-Curso en la DB. |
+
+#### **Sprint 2: El Motor de Optimización**
+
+| ID | Historia de Usuario | Responsable | Entregable |
+| :--- | :--- | :--- | :--- |
+| **HU-003** | Generación Automatizada | Administrador | Algoritmo CSP con cero cruces horarios. |
+| **HU-004** | Control de Reglas y Créditos | Administrador | Validador de límites de créditos [20-22]. |
+
+#### **Sprint 3: Interfaz de Usuario y Experiencia**
+
+| ID | Historia de Usuario | Responsable | Entregable |
+| :--- | :--- | :--- | :--- |
+| **HU-005** | Registro de Disponibilidad | Docente | Formulario de franjas horarias en React. |
+| **HU-006** | Visualización de Horario | Alumno | Tabla interactiva de horarios generados. |
+
+---
+
+### Versión 2.0.0 (Calidad y Sostenibilidad)
+
+#### **Sprint 4: Seguridad y Eficiencia**
+
+| ID | Historia de Usuario | Responsable | Entregable |
+| :--- | :--- | :--- | :--- |
+| **HU-007** | Acceso Seguro al Perfil | Administrador/Docente/Alumno | Login con JWT y protección OWASP |
+| **HU-008** | Reporte de Uso de Espacios | Administrador | Dashboard de eficiencia energética (Green IT)|
+
+---
+
+## 5. Resumen de Entregas
+
+| Versión | Sprint | Enfoque Principal |
+| :--- | :--- | :--- |
+| **1.0.0** | **S1** | Infraestructura y Datos|
+| **1.0.0** | **S2** | Algoritmo y Lógica |
+| **1.0.0** | **S3** | UX/UI y Flujos |
+| **2.0.0** | **S4** | Seguridad y Sostenibilidad |
