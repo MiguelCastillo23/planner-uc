@@ -49,24 +49,24 @@ Para organizar el desarrollo del PMV, se han definido 4 épicas alineadas con lo
 
 #### **Sprint 1: Cimientos y Gestión de Datos**
 
-| ID | Historia de Usuario | Responsable | Entregable |
-| :--- | :--- | :--- | :--- |
-| **HU-001** | Gestión de Recursos Académicos | Administrador | CRUD de aulas y cursos en MongoDB. |
-| **HU-002** | Asignación de Carga Académica | Administrador | Relación lógica Docente-Curso en la DB. |
+| ID | Historia de Usuario  | Entregable |
+| :--- | :---  | :--- |
+| **HU-001** | Gestión de Recursos Académicos  | CRUD de aulas y cursos en MongoDB. |
+| **HU-002** | Asignación de Carga Académica  | Relación lógica Docente-Curso en la DB. |
 
 #### **Sprint 2: El Motor de Optimización**
 
-| ID | Historia de Usuario | Responsable | Entregable |
-| :--- | :--- | :--- | :--- |
-| **HU-003** | Generación Automatizada | Administrador | Algoritmo CSP con cero cruces horarios. |
-| **HU-004** | Control de Reglas y Créditos | Administrador | Validador de límites de créditos [20-22]. |
+| ID | Historia de Usuario  | Entregable |
+| :--- | :---  | :--- |
+| **HU-003** | Generación Automatizada  | Algoritmo CSP con cero cruces horarios. |
+| **HU-004** | Control de Reglas y Créditos  | Validador de límites de créditos [20-22]. |
 
 #### **Sprint 3: Interfaz de Usuario y Experiencia**
 
-| ID | Historia de Usuario | Responsable | Entregable |
-| :--- | :--- | :--- | :--- |
-| **HU-005** | Registro de Disponibilidad | Docente | Formulario de franjas horarias en React. |
-| **HU-006** | Visualización de Horario | Alumno | Tabla interactiva de horarios generados. |
+| ID | Historia de Usuario | Entregable |
+| :--- | :--- | :---  |
+| **HU-005** | Registro de Disponibilidad  | Formulario de franjas horarias en React. |
+| **HU-006** | Visualización de Horario  | Tabla interactiva de horarios generados. |
 
 ---
 
@@ -74,10 +74,10 @@ Para organizar el desarrollo del PMV, se han definido 4 épicas alineadas con lo
 
 #### **Sprint 4: Seguridad y Eficiencia**
 
-| ID | Historia de Usuario | Responsable | Entregable |
-| :--- | :--- | :--- | :--- |
-| **HU-007** | Acceso Seguro al Perfil | Administrador/Docente/Alumno | Login con JWT y protección OWASP |
-| **HU-008** | Reporte de Uso de Espacios | Administrador | Dashboard de eficiencia energética (Green IT)|
+| ID | Historia de Usuario  | Entregable |
+| :--- | :---  | :--- |
+| **HU-007** | Acceso Seguro al Perfil | Login con JWT y protección OWASP |
+| **HU-008** | Reporte de Uso de Espacios | Dashboard de eficiencia energética (Green IT)|
 
 ---
 
