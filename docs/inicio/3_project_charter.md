@@ -66,7 +66,7 @@ Desarrollo de un Producto Mínimo Viable (PMV) basado en el **Stack MERN (MongoD
 ## Niveles de Autoridad del Líder de Proyecto:
 
 **Decisiones de Personal:**
-El equipo (Miguel y Alain) tiene plena autoridad para asignar roles internos según el marco Scrum y definir la carga de trabajo en cada Sprint.
+El equipo (Miguel, Alain y Erick) tiene plena autoridad para asignar roles internos según el marco Scrum y definir la carga de trabajo en cada Sprint.
 
 **Gestión de Presupuesto y Variaciones:**
 Gestión de recursos tecnológicos gratuitos; cualquier gasto adicional requiere aprobación previa.
