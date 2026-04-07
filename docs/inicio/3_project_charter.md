@@ -5,7 +5,7 @@
 | | |
 | :--- | :--- |
 | **Patrocinador del Proyecto:** | **Fecha de Preparación:** 30/03/2026 |
-| **Líder de Proyecto (PM):** Miguel Angel Castillo Rojas / Alain Aliaga Eulogio | **Cliente del Proyecto:** Coordinación Académica / Estudiantes |
+| **Líder de Proyecto (PM):** Miguel Angel Castillo Rojas / Alain Aliaga Eulogio / Erick Sanchez Vicente | **Cliente del Proyecto:** Coordinación Académica / Estudiantes |
 
 ## Propósito del Proyecto:
 Diseñar e implementar una aplicación web inteligente que genere horarios académicos óptimos considerando restricciones académicas (como prerrequisitos), operativas y contextuales, facilitando la planificación en entornos de alta variabilidad.
