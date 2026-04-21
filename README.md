@@ -6,6 +6,7 @@ Este proyecto es el resultado del **Proyecto de Fin de Asignatura (PFA)** para e
 * Miguel Angel Castillo Rojas
 * Alain Aliaga Eulogio
 * Erick Sanchez Vicente
+* Ulloa Alvinagorta Tony
 
 ---
 
