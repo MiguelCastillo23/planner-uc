@@ -21,7 +21,9 @@ A continuación, se presenta el índice dinámico de los documentos de gestión 
 5. 🤝 [Declaración del Equipo del Proyecto](./docs/inicio/5_equipo_proyecto.md)
 6. 🎯 [Product Backlog Inicial](./docs/inicio/6_product_backlog.md)
 7. 📋 [Lista Preliminar de Requerimientos (RF y RNF)](./docs/inicio/7_lista_requerimientos.md)
-
+8. 💵 [Presupuesto Proyecto](./docs/inicio/8_presupuesto_del_proyecto.md)
+9. ⚠️ [Registro de Riesgos](./docs/inicio/9_registro_riesgos.md)
+10. 📑 [Informe_Tecnico](./docs/inicio/10_informe_tecnico.md)
 ---
 
 ## 🛠️ Stack Tecnológico
