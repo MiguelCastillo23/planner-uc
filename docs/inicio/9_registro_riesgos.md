@@ -2,7 +2,7 @@
 
 **Proyecto:** Sistema de Generación Óptima de Horarios Académicos en Entornos de Currículo Flexible
 **Gerente del Proyecto / Scrum Master:** Miguel Angel Castillo Rojas
-**Equipo de Desarrollo:** Alain Aliaga Eulogio, Erick Sanchez Vicente, Tony Ulloa Alvinagorta, Brando
+**Equipo de Desarrollo:** Alain Aliaga Eulogio, Erick Sanchez Vicente, Tony Ulloa Alvinagorta
 **Fecha de Actualización:** 30 de marzo de 2026
 **Versión:** 2.0.0 (Súper Completa)
 
