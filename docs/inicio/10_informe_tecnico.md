@@ -70,8 +70,5 @@ Visualización final mediante CSS Grid que une sesiones consecutivas para repres
 - **Escalabilidad:** Conexión a MongoDB Atlas mediante pool de conexiones para soportar múltiples usuarios concurrentes.
 - **Eficiencia:** Implementación de `.lean()` en consultas para minimizar el consumo de memoria en el servidor.
 
----
 
-## 7. Conclusiones
-El prototipo cumple satisfactoriamente con la rúbrica de evaluación, demostrando un nivel **Sobresaliente** en la implementación de algoritmos complejos, validación técnica mediante pruebas y una interfaz de usuario orientada a la experiencia académica.
 
