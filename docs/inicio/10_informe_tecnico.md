@@ -59,7 +59,7 @@ La interfaz permite una interacción humana con el algoritmo, validando los cré
 El usuario elige las asignaturas; el sistema bloquea la generación si no se cumple el rango de 20-22 créditos.
 > **url imagen creditos: https://i.ibb.co/dwxx2LD4/Contador-Creditos.jpg**
 
-### Grid de Horario "Humanizado"
+### Grid de Horario
 Visualización final mediante CSS Grid que une sesiones consecutivas para representar la continuidad pedagógica.
 > **url imagen vista final: https://i.ibb.co/Mqy8FyR/Horario.png**
 
