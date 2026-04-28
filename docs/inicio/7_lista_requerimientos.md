@@ -35,6 +35,6 @@ Definen las propiedades del sistema y las restricciones de su funcionamiento.
 | **RNF-01** | Seguridad | Las contraseñas deben estar encriptadas y el acceso protegido mediante JWT (JSON Web Tokens). | OWASP Top 10 |
 | **RNF-02** | Usabilidad | La interfaz debe ser intuitiva y accesible para personas con discapacidad visual o motriz. | WCAG 2.1 / W3C |
 | **RNF-03** | Mantenibilidad | El código debe estar documentado y seguir una arquitectura limpia (Clean Architecture) en Node.js. | ISO/IEC 25010 |
-| **RNF-04** | Rendimiento | La generación del horario óptimo no debe exceder los 5 minutos de procesamiento en el servidor. | Eficiencia |
+| **RNF-04** | Rendimiento | La generación del horario óptimo no debe exceder los 2 minutos de procesamiento en el servidor. | Eficiencia |
 | **RNF-05** | Sostenibilidad | El algoritmo debe optimizar el uso de CPU para reducir el consumo energético del servidor. | Green Software |
 | **RNF-06** | Disponibilidad | La aplicación debe estar disponible en la nube el 99% del tiempo durante el periodo de matrícula. | Cloud (Vercel/Render) |
