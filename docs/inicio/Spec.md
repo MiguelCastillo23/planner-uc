@@ -215,3 +215,94 @@ Maximizar el fitness (minimizar conflictos)
 - Se genera un horario en tiempo < 2 segundos
 - El resultado cumple con la estructura académica definida
 - Se minimizan penalizaciones en restricciones blandas
+
+## 11. ANÁLISIS DEL ENFOQUE SPEC-DRIVEN DEVELOPMENT (SDD)
+### 11.1 Coherencia entre especificación, modelado e implementación
+
+El sistema presenta una alta coherencia entre:
+
+- **Especificación formal (Spec.md)**
+    
+    Define el problema como un CSP:
+
+        CSP = (X, D, C)
+- **Modelado del problema**
+    - Variables → cursos
+    - Dominios → secciones
+    - Restricciones → académicas, temporales y de recursos
+- **Implementación (Algoritmo Genético)**
+    - Representa soluciones como combinaciones de secciones
+    - Evalúa mediante función de fitness basada en restricciones
+    - Aplica operadores genéticos (crossover, mutación)
+
+👉 **Conclusión:**
+
+Existe alineación directa entre teoría (CSP), diseño (Spec) e implementación (GeneticEngine), lo que reduce errores de interpretación.
+
+### 11.2 Reducción de ambigüedad en requerimientos
+
+El uso de SDD permite eliminar ambigüedades mediante:
+
+- Definición explícita de:
+    - Restricciones duras (no negociables)
+    - Restricciones blandas (optimizables)
+- Formalización de reglas como:
+    - Intervalo mínimo de 11 minutos
+    - Rango de créditos (20–22)
+    - Estructura de cursos (3 y 4 créditos)
+- Especificación clara de entradas y salidas
+
+👉 Ejemplo:
+
+Sin Spec:
+
+    “Evitar cruces de horario”
+
+Con Spec:
+
+    “No debe existir solapamiento entre sesiones”
+
+👉 **Conclusión:**
+
+El sistema reduce significativamente la ambigüedad, facilitando la implementación correcta y validación del comportamiento esperado.
+
+### 11.3 Anticipación de conflictos del sistema
+
+El enfoque SDD permite identificar conflictos antes de la implementación:
+
+- **Solapamiento de horarios**
+
+    Detectado como restricción dura en el modelo CSP
+- **Conflictos de recursos(aulas/docentes)**
+
+    Prevenidos mediante reglas de exclusividad
+- **Incompatibilidad de cursos**
+
+    Identificada en casos límite (no existe solución válida)
+- **Carga académica inválida**
+
+    Bloqueada antes de ejecutar el algoritmo
+- **Alta complejidad combinatoria**
+
+    Considerada en:
+
+    - Límite de 500 generaciones
+    - Uso de algoritmo genético en lugar de búsqueda exhaustiva
+
+👉 **Conclusión:**
+
+El sistema no solo reacciona a errores, sino que los anticipa desde la especificación, reduciendo fallos en ejecución.
+
+### 11.4 Evaluación global del enfoque SDD
+- Se logra:
+    - Mayor claridad en requerimientos
+    - Reducción de errores de implementación
+    - Mejor alineación entre equipo
+- Impacto:
+    - Desarrollo más eficiente
+    - Menor retrabajo
+    - Mayor calidad del producto final
+
+👉 **Conclusión general:**
+
+El uso de Spec-Driven Development fortalece la calidad del sistema al formalizar el problema antes de su implementación, especialmente en un contexto de alta complejidad como el CSP.
