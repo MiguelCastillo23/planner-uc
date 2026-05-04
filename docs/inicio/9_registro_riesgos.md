@@ -55,3 +55,58 @@
 | **O-06** | **Base para Proyecto de Tesis** | 3.1 Dependencias | La complejidad algorítmica del proyecto es digna de una investigación académica. | 3 | 2 | **6** | 2 | Activo | **Explotar:** Documentar la arquitectura matemática del CSP para usarla como base de tesis de grado. | Tony U. |
 | **O-07** | **Optimización radical (Green Software)** | 1.4 Desempeño | La refactorización del código reduce los tiempos de respuesta a milisegundos. | 2 | 2 | **4** | 3 | Activo | **Mejorar:** Documentar la baja huella de carbono del software como valor agregado de innovación. | Miguel C. |
 | **O-08** | **Desarrollo acelerado de UI (React+Tailwind)** | 1.3 Interfaces | Uso de frameworks de CSS atómicos que agilizan el diseño responsivo. | 2 | 3 | **6** | 1 | Activo | **Explotar:** Configurar componentes base de Tailwind en el Sprint 1 para ensamblar vistas rápidamente. | Alain A. |
+
+## 5. ANÁLISIS DE RIESGOS Y OPORTUNIDADES
+### 5.1 Relación de riesgos con las restricciones del problema (CSP)
+
+El sistema se basa en un problema de satisfacción de restricciones (CSP), lo cual introduce riesgos directamente asociados a su naturaleza combinatoria.
+
+- El riesgo **R-01 (Cuello de botella del algoritmo CSP)** está directamente relacionado con la complejidad exponencial del problema, donde el número de combinaciones posibles crece rápidamente al aumentar cursos, docentes y aulas.
+- El riesgo **R-10 (Ambigüedad en prerrequisitos)** impacta la definición de restricciones, pudiendo generar soluciones inválidas o inconsistentes.
+- El riesgo **R-12 (Baja cobertura de pruebas)** afecta la validación de que las restricciones se cumplan correctamente en todos los escenarios.
+
+👉 **Conclusión:**
+
+El CSP es el núcleo del sistema, por lo que cualquier ambigüedad o ineficiencia impacta directamente en la calidad de la solución generada.
+
+---
+### 5.2 Relación con limitaciones técnicas
+
+El proyecto presenta restricciones tecnológicas propias del stack utilizado:
+
+- **Node.js (single-thread)** contribuye al riesgo **R-01**, ya que no está optimizado para cargas computacionales intensivas.
+- La integración **React + Express (R-03)** introduce riesgos de inconsistencia en estructuras de datos.
+- El uso de servicios gratuitos (MongoDB Atlas) genera el riesgo **R-06 (limitación de recursos)**.
+- **La curva de aprendizaje (R-09)** afecta la velocidad de desarrollo y calidad del código.
+
+👉 **Conclusión:**
+
+Las decisiones tecnológicas impactan directamente en el rendimiento, escalabilidad y tiempos del proyecto.
+
+---
+### 5.3 Relación con dependencias externas
+
+El proyecto depende de factores externos que pueden afectar su desarrollo:
+
+- **Stakeholders académicos (R-10)** → fuente de ambigüedad en reglas del sistema.
+- **Servicios cloud (R-06)**→ limitaciones operativas fuera del control del equipo.
+- **Evaluación académica (R-04, R-11)**→ cumplimiento de estándares externos (docente/universidad).
+
+👉 **Conclusión:**
+
+Las dependencias externas representan riesgos no controlables totalmente, por lo que requieren estrategias de mitigación anticipadas.
+
+---
+### 5.4 Evaluación global del riesgo del proyecto
+La mayoría de riesgos se concentran en:
+- Complejidad algorítmica (CSP)
+- Integración técnica
+- Gestión del equipo
+
+Se observa que:
+- Predominan riesgos moderados y críticos (puntuación ≥6)
+- Las estrategias se enfocan en mitigación más que eliminación
+
+👉 **Conclusión general:**
+
+El proyecto presenta un nivel de riesgo **medio-alto**, principalmente debido a la complejidad del problema CSP, pero es manejable mediante estrategias técnicas y de gestión adecuadas.
