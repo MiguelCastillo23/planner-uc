@@ -1,14 +1,10 @@
-# 🧠 Sistema de Generación Óptima de Horarios Académicos  
-## Planner-UC
+# 🧠 Sistema de Generación Óptima de Horarios Académicos - Planner-UC
 
-Este proyecto corresponde al **Proyecto de Fin de Asignatura (PFA)** del curso *Taller de Proyectos 2* de la Universidad Continental.
-
-El sistema aborda un problema complejo de ingeniería: la generación de horarios académicos en entornos de currículo flexible, caracterizado por alta combinatoria, múltiples restricciones y ausencia de soluciones triviales.
+Este proyecto corresponde al **Proyecto de Fin de Asignatura (PFA)** del curso *Taller de Proyectos 2* de la Universidad Continental. El sistema aborda un problema complejo de ingeniería: la generación de horarios en entornos de currículo flexible, caracterizado por alta combinatoria y múltiples restricciones.
 
 ---
 
 ## 👥 Integrantes del Equipo
-
 - Miguel Angel Castillo Rojas  
 - Alain Aliaga Eulogio  
 - Erick Sanchez Vicente  
@@ -17,154 +13,119 @@ El sistema aborda un problema complejo de ingeniería: la generación de horario
 ---
 
 ## 🎯 Descripción del Sistema
+Planner-UC es un sistema que genera horarios académicos óptimos garantizando el cumplimiento de restricciones académicas, la eliminación de conflictos y la optimización del tiempo.
 
-Planner-UC es un sistema que genera horarios académicos óptimos para estudiantes, garantizando:
-
-- Cumplimiento de restricciones académicas  
-- Eliminación de conflictos de horarios  
-- Optimización del uso del tiempo  
-
-El problema se modela como un:
-
+El problema se modela formalmente como un:
 👉 **Constraint Satisfaction Problem (CSP)**  
 
-Y se resuelve mediante:
-
+Y se resuelve mediante un motor evolutivo:
 👉 **Algoritmo Genético (GeneticEngine)**  
 
 ---
 
 ## 🧠 Enfoque de Resolución
 
-### 🔹 Modelado del Problema
+### 🔹 Modelado del Problema (CSP)
+El sistema implementa el modelo **CSP = (X, D, C)** de forma dinámica:
+- **X (Variables):** Cursos seleccionados por el usuario en el Frontend.
+- **D (Dominios):** Secciones disponibles recuperadas en tiempo real desde **MongoDB Atlas**.
+- **C (Restricciones):** Reglas académicas, temporales y de recursos que actúan como la función de fitness.
 
-CSP = (X, D, C)
-
-- **X:** Cursos seleccionados  
-- **D:** Secciones disponibles  
-- **C:** Restricciones académicas, temporales y de recursos  
-
----
+### 🔄 Flujo de Datos (Arquitectura de Información)
+1. **Captura (X):** El usuario selecciona cursos; React valida el rango de **20-22 créditos**.
+2. **Inyección (D):** Node.js extrae de la base de datos los horarios y aulas (A101-M202) de cada sección.
+3. **Procesamiento (C):** El **GeneticEngine** aplica la lógica de penalización para encontrar el individuo con **Fitness = 0**.
+4. **Renderizado:** Los datos fluyen al componente `ScheduleGrid.jsx` para mostrar el calendario interactivo.
 
 ### 🔹 Algoritmo Genético
-
-El sistema utiliza un motor evolutivo para explorar soluciones:
-
-#### Representación
-Cada individuo representa un horario completo:
-
-*Curso → Sección asignada*
-
-#### Función de Fitness
-Se penalizan:
-
-- Solapamientos de horarios  
-- Conflictos de aula  
-- Conflictos de docente  
-- Violaciones de reglas académicas  
-
-Objetivo:
-
-*Maximizar fitness → Minimizar conflictos*
-
-
-#### Operadores Genéticos
-
-- Selección: Torneo  
-- Cruce: Combinación de soluciones  
-- Mutación: Cambio aleatorio de sección  
-
-#### Criterio de parada
-
-- Máximo 500 generaciones  
-- O convergencia a solución válida  
+*   **Representación:** Cada individuo es un horario completo (*Curso → Sección*).
+*   **Función de Fitness:** Maximizar fitness minimizando solapamientos, conflictos de aula/docente y violaciones de margen.
+*   **Operadores:** Selección por Torneo, Cruce de soluciones y Mutación aleatoria.
+*   **Criterio de Parada:** Máximo **2000 generaciones** o convergencia total (**Green Software**).
 
 ---
 
 ## 📜 Reglas del Sistema
 
-### 🔴 Restricciones Duras
+### 🔴 Restricciones Duras (Obligatorias)
+- **Margen de Transición:** Intervalo mínimo de **11 minutos** entre sesiones.
+- **Estructura de Bloques:** Sesiones estándar de **90 minutos**.
+- **Carga Académica:** Rango estricto de **20–22 créditos**.
+- **Ventana Operativa:** De 07:00 AM a 10:00 PM.
+- **Exclusividad:** No solapamiento de Horario, Docente o Aula.
 
-- No solapamiento de horarios  
-- Docente único por horario  
-- Aula única por horario  
-- Rango de créditos: **20–22**  
-- Ventana horaria: **07:00 – 22:00**  
-- Intervalo mínimo: **11 minutos**  
-
----
-
-### 🟡 Restricciones Blandas
-
-- Minimizar huecos  
-- Evitar horarios extremos  
-- Agrupar clases  
+### 🟡 Restricciones Blandas (Deseables)
+- Minimizar "huecos" o ventanas entre clases.
+- Evitar horarios extremos y agrupar sesiones en días contiguos.
 
 ---
 
-## 🏗️ Arquitectura del Sistema
-
-El proyecto sigue el stack **MERN**:
-
-- **Frontend:** React (Vite)  
-- **Backend:** Node.js + Express  
-- **Base de Datos:** MongoDB   
+## 🏗️ Arquitectura del Sistema (MERN Stack)
+- **Frontend:** React (Vite) + CSS Grid para el calendario.
+- **Backend:** Node.js + Express.
+- **Base de Datos:** MongoDB Atlas.
+- **Infraestructura:** Despliegue en la nube optimizado para bajo consumo de recursos.
 
 ---
 
 ## ⚙️ Instalación y Ejecución
 
 ### 🔹 Requisitos
-
 - Node.js v22+
-- MongoDB
+- MongoDB Atlas (Configurar `.env` con `MONGO_URI`)
 
 ### 🔹 Backend
-    cd backend
-    npm install
-    npm run dev
+```bash
+cd backend
+npm install
+npm run dev
+```
 
-### 🔹 Backend
-    cd frontend
-    pm install
-    npm run dev
+### 🔹 Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
 ---
-## 🧪 Testing
 
-Se implementaron pruebas unitarias con Jest para validar:
+## 🧪 Testing y Métricas
+Se implementaron pruebas unitarias con **Jest** para validar la función de fitness y el cumplimiento de los 11 minutos de margen.
 
-Función de fitness
-Generación de bloques horarios
+```bash
+npm test
+```
 
-    npm test
+*   **⏱️ Tiempo Promedio:** 0.8 - 1.5 segundos.
+*   **🎯 Meta:** < 2 segundos.
+*   **♻️ Optimización:** Límite de 2000 iteraciones para reducir huella de carbono (**Green Software**).
 
-## 📊 Métricas del Sistema
-
-- ⏱️ Tiempo promedio: 0.8 segundos
-- 🎯 Meta: < 2 segundos
-- ♻️ Optimización: límite de 500 iteraciones (Green Software)
 ---
-## 📂 Documentación del Inicio del Proyecto - Spring0
 
-A continuación, se presenta el índice dinámico de los documentos de gestión y análisis inicial. Haz clic en cada uno para visualizar el detalle:
+## 📂 Documentación del Proyecto
 
-1. 📑 [Documento de Selección del Enfoque del Proyecto](./docs/inicio/1_seleccion_enfoque.md)
-2. 👁️ [Declaración de la Visión del Proyecto](./docs/inicio/2_vision_proyecto.md)
-3. 📜 [Acta de Constitución (Project Charter)](./docs/inicio/3_project_charter.md)
-4. 📌 [Registro de Supuestos y Restricciones](./docs/inicio/4_supuestos_restricciones.md)
-5. 🤝 [Declaración del Equipo del Proyecto](./docs/inicio/5_equipo_proyecto.md)
-6. 🎯 [Product Backlog Inicial](./docs/inicio/6_product_backlog.md)
-7. 📋 [Lista Preliminar de Requerimientos (RF y RNF)](./docs/inicio/7_lista_requerimientos.md)
-8. 💵 [Presupuesto Proyecto](./docs/inicio/8_presupuesto_del_proyecto.md)
+### Gestión Inicial (Sprint 0)
+1. 📑 [Selección del Enfoque](./docs/inicio/1_seleccion_enfoque.md)
+2. 👁️ [Visión del Proyecto](./docs/inicio/2_vision_proyecto.md)
+3. 📜 [Project Charter](./docs/inicio/3_project_charter.md)
+4. 📌 [Supuestos y Restricciones](./docs/inicio/4_supuestos_restricciones.md)
+5. 🤝 [Declaración del Equipo](./docs/inicio/5_equipo_proyecto.md)
+6. 🎯 [Product Backlog](./docs/inicio/6_product_backlog.md)
+7. 📋 [Requerimientos (RF/RNF)](./docs/inicio/7_lista_requerimientos.md)
+8. 💵 [Presupuesto del Proyecto](./docs/inicio/8_presupuesto_del_proyecto.md)
 9. ⚠️ [Registro de Riesgos](./docs/inicio/9_registro_riesgos.md)
-10. 📑 [Informe_Tecnico](./docs/inicio/10_informe_tecnico.md)
+10. 📑 [Informe Técnico Final](./docs/inicio/10_informe_tecnico.md)
+
+### Documentación Técnica (SDD)
+- 📘 [Especificación Formal (Spec.md)](./docs/inicio/Spec.md)
+- 🧠 [Constitución y Reglas (Constitution.md)](./docs/inicio/constitution.md)
+
 ---
-## 🧠 Documentación Técnica (SDD)
-- 📘 [Especificación formal del sistema](./docs/inicio/Spec.md)
-- 🧠 [Principios, reglas y restricciones](./docs/inicio/Agents.md)
----
+
 ## 🔗 Herramientas de Gestión
-* **Jira** https://continental-poyectos2.atlassian.net/jira/software/projects/TC/boards/1/backlog?epics=visible&atlOrigin=eyJpIjoiZDI2ZDJjZGQ1OTJkNDZlZDllNWI4ODAxNjczMjE1ZDIiLCJwIjoiaiJ9
+*   **Jira Software:** [Tablero de Control y Backlog](https://continental-poyectos2.atlassian.net/jira/software/projects/TC/boards/1/backlog)
+
 ---
-📅 Ciclo Académico 2026-01
-🏫 Universidad Continental – Huancayo
+📅 **Ciclo Académico 2026-01**  
+🏫 **Universidad Continental – Huancayo**
