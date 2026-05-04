@@ -56,13 +56,13 @@ Este cuadro detalla el esfuerzo técnico y de gestión para la construcción del
 
 ---
 
-## 2.2. SPRINT 2: EL MOTOR DE OPTIMIZACIÓN (CSP)
+## 2.2. SPRINT 2: EL MOTOR DE OPTIMIZACIÓN (Algoritmo Genetico)
 **Épica:** E02 - Motor de Reglas y Optimización
 **Fecha Estimada:** 11/05/2026
 
 | Item / Historia de Usuario | Costo (S/.) | Razón y Entregable Clave |
 | :--- | :--- | :--- |
-| **HU-003: Generación Automatizada** | S/ 1,750.00 | Diseño y programación del algoritmo CSP para evitar cruces de horarios. |
+| **HU-003: Generación Automatizada** | S/ 1,750.00 | Diseño y programación del algoritmo genetico para evitar cruces de horarios. |
 | **HU-004: Control de Reglas y Créditos** | S/ 875.00 | Desarrollo del validador de límites de créditos [20-22] y prerrequisitos. |
 | **Gerencia y Stakeholders (Sprint 2)** | S/ 525.00 | Validación de reglas de negocio con Coordinación Académica. |
 | **TOTAL SPRINT 2** | **S/ 3,150.00** | **Entregable:** Motor algorítmico capaz de generar horarios válidos. |
@@ -121,7 +121,7 @@ Este cuadro detalla el esfuerzo técnico y de gestión para la construcción del
 | 2.1 | Especificaciones Funcionales | 06/04/2026 | 700.00 | Definición de requerimientos (RF y RNF) y Product Backlog. |
 | 2.2 | Arquitectura del Sistema | 09/04/2026 | 525.00 | Diseño de arquitectura SPA + API REST y Stack MERN. |
 | 2.3 | Diseño Preliminar y de Datos | 12/04/2026 | 525.00 | Modelado de base de datos MongoDB y esquemas de persistencia. |
-| 2.4 | Diseño Detallado del CSP | 15/04/2026 | 700.00 | Modelado formal del problema de satisfacción de restricciones. |
+| 2.4 | Diseño Detallado del Algoritmo | 15/04/2026 | 700.00 | Modelado formal del problema de satisfacción de restricciones. |
 | 2.5 | Plan de Pruebas de Aceptación | 18/04/2026 | 350.00 | Estrategia de validación para el motor de horarios. |
 | | **Subtotal Planificación** | | **S/ 2,800.00** | |
 | | | | | |
