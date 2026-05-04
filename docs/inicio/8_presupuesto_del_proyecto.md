@@ -154,3 +154,75 @@ Este cuadro detalla el esfuerzo técnico y de gestión para la construcción del
 * **Infraestructura:** Se prioriza el uso de capas gratuitas (Free Tiers) de MongoDB Atlas y Vercel, manteniendo un fondo de reserva de S/ 250.00 para contingencias.
 * **Sostenibilidad:** La optimización del código bajo estándares de *Green Software* busca reducir costos operativos a largo plazo.
 
+## 5. EVOLUCIÓN ACUMULADA DE COSTOS
+
+| Sprint | Costo del Sprint(S/.) | Costo Acumulado(S/.)
+|  :--- | :--- | :--- |
+| Sprint 1 | S/ 2,500.00 | S/ 2,500.00
+| Sprint 2 | S/ 3,150.00 | S/ 5,650.00
+| Sprint 3 | S/ 2,800.00 | S/ 8,450.00
+|Sprint 4 | S/ 3,875.00 | S/ 12,325.00|
+---
+## 6. ANÁLISIS ECONÓMICO DEL PROYECTO
+### 6.1 Relación entre la complejidad del problema y el costo del sistema
+
+El sistema aborda un problema de alta complejidad computacional basado en **Constraint Satisfaction Problem (CSP)**, lo cual impacta directamente en el costo del proyecto.
+
+- El desarrollo del algoritmo de generación de horarios (Sprint 2) representa el mayor costo técnico (S/ 3,150.00), debido a:
+    - La necesidad de modelar múltiples restricciones simultáneamente
+    - El diseño de heurísticas de optimización
+    - El alto esfuerzo en pruebas y validación
+- La complejidad combinatoria del problema incrementa:
+    - Tiempo de desarrollo
+    - Esfuerzo en pruebas
+    - Costos de validación
+
+👉 **Conclusión:**
+
+El costo del sistema es proporcional a la complejidad del CSP, siendo el motor de optimización el principal consumidor de recursos.
+
+### 6.2 Identificación de factores de incremento de costos
+
+Se identifican los siguientes factores críticos que incrementan el costo del proyecto:
+
+- **Complejidad algorítmica (CSP)**
+    Incrementa horas de desarrollo y pruebas.
+- **Integración Frontend-Backend**
+    Genera retrabajo si no se definen contratos claros.
+- **Curva de aprendizaje del stack MERN**
+    Aumenta el tiempo en etapas iniciales.
+- **Aseguramiento de calidad (QA)**
+    Requiere pruebas adicionales para garantizar cumplimiento de restricciones.
+- **Gestión del proyecto (Scrum)**
+    Introduce costos indirectos necesarios para coordinación y control.
+
+👉 **Conclusión:**
+
+Los costos no solo provienen del desarrollo, sino también de la gestión, validación y complejidad técnica del sistema.
+
+### 6.3 Evaluación de sostenibilidad (Green Software)
+
+El proyecto incorpora principios de **Green Software**, buscando optimizar el consumo de recursos y reducir el impacto ambiental.
+
+- Uso de:
+    - Infraestructura cloud en capas gratuitas
+    - Optimización del algoritmo CSP para reducir uso de CPU
+    - Minimización de consultas innecesarias a la base de datos
+- Impacto:
+    - Reducción de costos operativos a largo plazo
+    - Menor consumo energético del sistema
+
+👉 **Conclusión:**
+
+El enfoque Green Software permite que el sistema sea sostenible tanto económica como ambientalmente, optimizando recursos sin comprometer el rendimiento.
+
+### 6.4 Evaluación global del presupuesto
+- Presupuesto total: S/ 12,325.00
+- Distribución:
+    - Desarrollo: mayor porcentaje
+    - Gestión: soporte del proceso
+    - Infraestructura: mínimo impacto (uso de free tier)
+
+👉 **Conclusión general:**
+
+El presupuesto es coherente con el alcance del PMV y la complejidad del problema, manteniendo un equilibrio entre costo, calidad y sostenibilidad.
