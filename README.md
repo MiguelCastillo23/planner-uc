@@ -105,26 +105,39 @@ npm test
 
 ## 📂 Documentación del Proyecto
 
+<details>
+<summary><b>📦 V 1.0.0</b></summary>
+
 ### Gestión Inicial (Sprint 0)
-1. 📑 [Selección del Enfoque](./docs/inicio/1_seleccion_enfoque.md)
-2. 👁️ [Visión del Proyecto](./docs/inicio/2_vision_proyecto.md)
-3. 📜 [Project Charter](./docs/inicio/3_project_charter.md)
-4. 📌 [Supuestos y Restricciones](./docs/inicio/4_supuestos_restricciones.md)
-5. 🤝 [Declaración del Equipo](./docs/inicio/5_equipo_proyecto.md)
-6. 🎯 [Product Backlog](./docs/inicio/6_product_backlog.md)
-7. 📋 [Requerimientos (RF/RNF)](./docs/inicio/7_lista_requerimientos.md)
-8. 💵 [Presupuesto del Proyecto](./docs/inicio/8_presupuesto_del_proyecto.md)
-9. ⚠️ [Registro de Riesgos](./docs/inicio/9_registro_riesgos.md)
-10. 📑 [Informe Técnico Final](./docs/inicio/10_informe_tecnico.md)
+1. 📑 [Selección del Enfoque](./docs/inicio/v1.0.0/1_seleccion_enfoque.md)
+2. 👁️ [Visión del Proyecto](./docs/inicio/v1.0.0/2_vision_proyecto.md)
+3. 📜 [Project Charter](./docs/inicio/v1.0.0/3_project_charter.md)
+4. 📌 [Supuestos y Restricciones](./docs/inicio/v1.0.0/4_supuestos_restricciones.md)
+5. 🤝 [Declaración del Equipo](./docs/inicio/v1.0.0/5_equipo_proyecto.md)
+6. 🎯 [Product Backlog](./docs/inicio/v1.0.0/6_product_backlog.md)
+7. 📋 [Requerimientos (RF/RNF)](./docs/inicio/v1.0.0/7_lista_requerimientos.md)
+8. 💵 [Presupuesto del Proyecto](./docs/inicio/v1.0.0/8_presupuesto_del_proyecto.md)
+9. ⚠️ [Registro de Riesgos](./docs/inicio/v1.0.0/9_registro_riesgos.md)
+10. 📑 [Informe Técnico Final](./docs/inicio/v1.0.0/10_informe_tecnico.md)
 
 ### Documentación Técnica (SDD)
-- 📘 [Especificación Formal (Spec.md)](./docs/inicio/Spec.md)
-- 🧠 [Constitución y Reglas (Constitution.md)](./docs/inicio/constitution.md)
+- 📘 [Especificación Formal (Spec.md)](./docs/inicio/v1.0.0/Spec.md)
+- 🧠 [Constitución y Reglas (Constitution.md)](./docs/inicio/v1.0.0/constitution.md)
+
+</details>
+
+<details>
+<summary><b>🚀 V 2.0.0</b></summary>
+
+### Gestión de Nuevas Versiones
+1. 📑 [Nuevos Requerimientos](./docs/inicio/v2.0.0/1_nuevos_req.md)
+
+</details>
 
 ---
 
 ## 🔗 Herramientas de Gestión
-*   **Jira Software:** [Tablero de Control y Backlog](https://continental-poyectos2.atlassian.net/jira/software/projects/TC/boards/1/backlog)
+*   **Jira Software:** [Tablero de Control y Backlog](https://atlassian.net)
 
 ---
 📅 **Ciclo Académico 2026-01**  
