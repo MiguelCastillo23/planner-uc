@@ -131,7 +131,7 @@ npm test
 
 ### Gestión de Nuevas Versiones
 1. 📑 [Nuevos Requerimientos](./docs/inicio/v2.0.0/1_nuevos_req.md)
-2. 🌱 [Reporte de Sostenibilidad y Green MERN (Medición CO2.js)](./docs/reporte_sostenibilidad.md)
+2. 🌱 [Reporte de Sostenibilidad y Green MERN](./docs/inicio/v2.0.0/2_green_software.md)
 
 </details>
 
