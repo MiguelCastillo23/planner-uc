@@ -89,6 +89,10 @@ Se reinició el servidor y se realizaron las mismas acciones de navegación para
 | **Peticiones basura (favicon.ico)** | 8 peticiones (404) | 0 peticiones | **-100%** | Cero CPU gastada en el servidor procesando rutas inexistentes. |
 | **Emisión CO2 Total** | 0.001049 g | 0.000055 g | **-94.7%** | **Reducción de huella de carbono directa.** Menor consumo de energía eléctrica en los centros de datos (servidores) y dispositivos cliente. |
 
+**Link imagen antes:** *https://i.ibb.co/gZ53tdrM/antes.jpg*
+
+**Link imagen después:** *https://i.ibb.co/d4TqRvQD/despues.jpg*
+
 ---
 
 ## 8. Pruebas de Rendimiento Complementarias (Google Lighthouse) (Punto 2.4.b)
