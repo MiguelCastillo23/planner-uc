@@ -1,8 +1,14 @@
 export class GeneticEngine {
   constructor() {
-    this.aulas = ['A101', 'B202', 'J205', 'M202', 'L105', 'K302']; // Más aulas para evitar choques
+    this.aulas = ['A101', 'B202', 'J205', 'M202', 'L105', 'K302']; // Aulas del motor original
+    this.diasSemana = [0, 1, 2, 3, 4, 5]; // 0: Lunes, 5: Sábado
+    this.totalFranjas = 9; // 0 a 8
   }
 
+  // ==========================================
+  // COMPATIBILIDAD CON PRUEBAS ORIGINALES (JEST)
+  // ==========================================
+  
   crearIndividuo(cursosSeleccionados = []) {
     try {
       let horario = [];
@@ -60,6 +66,171 @@ export class GeneticEngine {
       return 1 / (1 + conflictos);
     } catch (err) {
       console.error("❌ Error en calcularFitness:", err);
+      return 0;
+    }
+  }
+
+  // ==========================================
+  // 1. MOTOR GENÉTICO GLOBAL (ADMINISTRATIVO)
+  // ==========================================
+  
+  generarProgramacionGlobal(cursos = [], docentes = [], aulas = []) {
+    try {
+      const asignaciones = [];
+
+      cursos.forEach(curso => {
+        // Encontrar docentes aptos para el curso
+        let docentesAptos = docentes.filter(d => d.especialidad.includes(curso.codigo));
+        if (docentesAptos.length === 0) docentesAptos = [docentes[Math.floor(Math.random() * docentes.length)]];
+
+        // Crear 3 secciones por curso
+        for (let secNum = 1; secNum <= 3; secNum++) {
+          const docente = docentesAptos[(secNum - 1) % docentesAptos.length];
+          const aula = aulas[Math.floor(Math.random() * aulas.length)];
+          const codigoSeccion = `${curso.codigo}-SEC0${secNum}`;
+
+          // Definir días y franjas
+          const diaPrincipal = Math.floor(Math.random() * 6);
+          const franjaInicio = Math.floor(Math.random() * 8); // Máximo 8 para que +1 sea < 9
+
+          const horario = [];
+          if (curso.creditos === 3) {
+            // 2 bloques seguidos el mismo día (3 horas)
+            horario.push({ dia: diaPrincipal, franja: franjaInicio });
+            horario.push({ dia: diaPrincipal, franja: franjaInicio + 1 });
+          } else if (curso.creditos >= 4) {
+            // 2 bloques seguidos + 1 bloque otro día
+            horario.push({ dia: diaPrincipal, franja: franjaInicio });
+            horario.push({ dia: diaPrincipal, franja: franjaInicio + 1 });
+
+            let diaSecundario;
+            do {
+              diaSecundario = Math.floor(Math.random() * 6);
+            } while (diaSecundario === diaPrincipal);
+            horario.push({ dia: diaSecundario, franja: Math.floor(Math.random() * 9) });
+          } else {
+            // 1 o 2 créditos: 1 bloque
+            horario.push({ dia: diaPrincipal, franja: franjaInicio });
+          }
+
+          asignaciones.push({
+            codigo: codigoSeccion,
+            curso: curso._id,
+            cursoCodigo: curso.codigo,
+            cursoNombre: curso.nombre,
+            docente: docente._id,
+            docenteNombre: docente.nombre,
+            aula: aula._id,
+            aulaNombre: aula.nombre,
+            horario,
+            vacantesTotales: aula.capacidad || 25,
+            vacantesDisponibles: aula.capacidad || 25
+          });
+        }
+      });
+
+      return { genes: asignaciones };
+    } catch (err) {
+      console.error("❌ Error en generarProgramacionGlobal:", err);
+      throw err;
+    }
+  }
+
+  calcularFitnessGlobal(individuo) {
+    try {
+      let conflictos = 0;
+      const ocupacionAula = new Set();
+      const ocupacionDocente = new Set();
+
+      individuo.genes.forEach(sec => {
+        sec.horario.forEach(h => {
+          // Conflicto de aula en el mismo horario
+          const claveAula = `${h.dia}-${h.franja}-${sec.aula}`;
+          if (ocupacionAula.has(claveAula)) conflictos++;
+          ocupacionAula.add(claveAula);
+
+          // Conflicto de docente dictando dos clases a la vez
+          const claveDocente = `${h.dia}-${h.franja}-${sec.docente}`;
+          if (ocupacionDocente.has(claveDocente)) conflictos++;
+          ocupacionDocente.add(claveDocente);
+
+          // Penalizar franjas fuera de rango
+          if (h.franja < 0 || h.franja > 8) conflictos += 5;
+        });
+      });
+
+      return 1 / (1 + conflictos);
+    } catch (err) {
+      console.error("❌ Error en calcularFitnessGlobal:", err);
+      return 0;
+    }
+  }
+
+  // ==========================================
+  // 2. MOTOR GENÉTICO DEL ALUMNO (ASISTENTE)
+  // ==========================================
+  
+  crearIndividuoAlumno(cursosSeleccionados = [], seccionesDisponibles = []) {
+    try {
+      const genes = [];
+
+      cursosSeleccionados.forEach(curso => {
+        const seccionesCurso = seccionesDisponibles.filter(sec => 
+          sec.curso._id?.toString() === curso._id?.toString() || 
+          sec.curso?.toString() === curso._id?.toString()
+        );
+
+        if (seccionesCurso.length > 0) {
+          const seccionElegida = seccionesCurso[Math.floor(Math.random() * seccionesCurso.length)];
+          genes.push(seccionElegida);
+        }
+      });
+
+      return { genes };
+    } catch (err) {
+      console.error("❌ Error en crearIndividuoAlumno:", err);
+      throw err;
+    }
+  }
+
+  calcularFitnessAlumno(individuo) {
+    try {
+      let conflictos = 0;
+      let huecosHorarios = 0;
+      const agendaEstudiante = new Map();
+
+      individuo.genes.forEach(sec => {
+        sec.horario.forEach(h => {
+          const claveHora = `${h.dia}-${h.franja}`;
+          if (agendaEstudiante.has(claveHora)) {
+            conflictos += 15;
+          }
+          agendaEstudiante.set(claveHora, sec);
+        });
+      });
+
+      const franjasPorDia = {};
+      for (const [clave] of agendaEstudiante) {
+        const [dia, franja] = clave.split('-').map(Number);
+        if (!franjasPorDia[dia]) franjasPorDia[dia] = [];
+        franjasPorDia[dia].push(franja);
+      }
+
+      Object.keys(franjasPorDia).forEach(dia => {
+        const slots = franjasPorDia[dia].sort((a, b) => a - b);
+        if (slots.length > 1) {
+          for (let idx = 0; idx < slots.length - 1; idx++) {
+            const dif = slots[idx + 1] - slots[idx];
+            if (dif > 1) {
+              huecosHorarios += (dif - 1);
+            }
+          }
+        }
+      });
+
+      return 1 / (1 + conflictos + (huecosHorarios * 0.1));
+    } catch (err) {
+      console.error("❌ Error en calcularFitnessAlumno:", err);
       return 0;
     }
   }

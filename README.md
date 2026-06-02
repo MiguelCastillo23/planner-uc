@@ -133,6 +133,15 @@ npm test
 1. 📑 [Nuevos Requerimientos](./docs/inicio/v2.0.0/1_nuevos_req.md)
 2. 🌱 [Reporte de Sostenibilidad y Green MERN (Medición CO2.js)](./docs/reporte_sostenibilidad.md)
 
+### Nuevas Funcionalidades Implementadas
+*   **Malla Curricular de Ingeniería de Sistemas e Informática:** Mapeo completo de 61 cursos obligatorios/electivos a lo largo de 10 semestres, con prerrequisitos detallados (como *Cálculo I* → *Cálculo II*, e *Investigación 1* → *Investigación 2*) y validación de créditos acumulados.
+*   **Arquitectura Multi-Rol:**
+    *   **Administrador:** Generación de la programación académica global (3 secciones por asignatura) con motor genético para prevenir solapamientos de aulas y docentes; panel financiero para habilitar deudas, seguros y pagos.
+    *   **Docente:** Grilla horaria personalizada con las clases y aulas que tiene asignadas.
+    *   **Estudiante:** Módulo de Matrícula Manual con control dinámico de créditos (12-25 regular, 16 repitente, curso único separado por 3ra vez y bloqueo por 4ta desaprobación) y **Asistente Genético (Auto-Matrícula)** que selecciona de forma óptima las secciones sin cruces de horarios.
+*   **Servicios Académicos:** Módulo de trámites de retiros de cursos (límite semana 14/7), reservas de matrícula completa (semana 2) y solicitud de asignaturas dirigidas (máximo 3, restringido por desaprobaciones).
+*   **Base de Datos y Seeder de Simulación:** Script `seed.js` para poblar la base de datos de MongoDB con 183 secciones asignadas a 17 aulas y 11 docentes calificados, junto con 7 estudiantes preconfigurados para verificar todas las reglas de negocio en la UI.
+
 </details>
 
 ---
