@@ -1,9 +1,9 @@
+import { describe, it, expect, vi, beforeEach, test } from 'vitest';
 import { environmentalTracker } from '../middlewares/environmentalTracker.js';
 import EnvironmentalMetric from '../models/EnvironmentalMetric.js';
-import { jest } from '@jest/globals';
 
 // Spy on the DB model instead of full module mock to avoid ESM issues
-jest.spyOn(EnvironmentalMetric, 'create').mockImplementation(() => Promise.resolve({}));
+vi.spyOn(EnvironmentalMetric, 'create').mockImplementation(() => Promise.resolve({}));
 
 describe('Environmental Tracker Middleware', () => {
   let req;
@@ -19,9 +19,9 @@ describe('Environmental Tracker Middleware', () => {
     
     res = {
       statusCode: 200,
-      getHeader: jest.fn(),
-      send: jest.fn(),
-      on: jest.fn((event, callback) => {
+      getHeader: vi.fn(),
+      send: vi.fn(),
+      on: vi.fn((event, callback) => {
         if (event === 'finish') {
           // Guardamos el callback para llamarlo manualmente en el test
           res.finishCallback = callback;
@@ -30,8 +30,8 @@ describe('Environmental Tracker Middleware', () => {
       locals: {}
     };
     
-    next = jest.fn();
-    jest.clearAllMocks();
+    next = vi.fn();
+    vi.clearAllMocks();
   });
 
   test('debe llamar a next() y registrar la métrica al finalizar la respuesta', async () => {

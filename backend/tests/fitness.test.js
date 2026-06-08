@@ -1,3 +1,4 @@
+import { describe, it, expect, vi, test } from 'vitest';
 import { GeneticEngine } from '../src/engine/genetic.js';
 
 describe('Validación de Restricciones de Negocio (Créditos)', () => {

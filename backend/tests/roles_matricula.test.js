@@ -1,6 +1,6 @@
+import { describe, it, expect, vi, beforeEach, test } from 'vitest';
 import { procesarMatricula, solicitarAsignaturaDirigida } from '../controllers/studentController.js';
 import { Estudiante, Seccion, Matricula, Curso } from '../models/Schemas.js';
-import { jest } from '@jest/globals';
 
 describe('Validaciones de Matrícula (RF y RNF)', () => {
   let req, res;
@@ -22,21 +22,21 @@ describe('Validaciones de Matrícula (RF y RNF)', () => {
         this.statusCode = code;
         return this;
       },
-      json: jest.fn()
+      json: vi.fn()
     };
 
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('RNF-01: Debe bloquear la matrícula si el estudiante presenta deudas', async () => {
     // Mock Estudiante con deuda
-    jest.spyOn(Estudiante, 'findById').mockResolvedValue({
+    vi.spyOn(Estudiante, 'findById').mockResolvedValue({
       nombre: "Ana Rojas",
       tieneDeudas: true,
       tasaPagada: true,
       seguroVigente: true,
       planVigente: true,
-      save: jest.fn().mockResolvedValue(true)
+      save: vi.fn().mockResolvedValue(true)
     });
 
     await procesarMatricula(req, res);
@@ -49,7 +49,7 @@ describe('Validaciones de Matrícula (RF y RNF)', () => {
 
   test('RF-02: Debe bloquear la matrícula si no se cumplen los prerrequisitos del curso', async () => {
     // Mock Estudiante regular sin Cálculo I aprobado
-    jest.spyOn(Estudiante, 'findById').mockResolvedValue({
+    vi.spyOn(Estudiante, 'findById').mockResolvedValue({
       nombre: "Pedro Gómez",
       tieneDeudas: false,
       tasaPagada: true,
@@ -57,12 +57,12 @@ describe('Validaciones de Matrícula (RF y RNF)', () => {
       planVigente: true,
       cursosAprobados: [], // No tiene ASUCO1113 (prerrequisito)
       historialDesaprobados: new Map(),
-      save: jest.fn().mockResolvedValue(true)
+      save: vi.fn().mockResolvedValue(true)
     });
 
     // Mock Sección de Álgebra que requiere ASUCO1113
-    jest.spyOn(Seccion, 'find').mockReturnValue({
-      populate: jest.fn().mockResolvedValue([
+    vi.spyOn(Seccion, 'find').mockReturnValue({
+      populate: vi.fn().mockResolvedValue([
         {
           _id: '60c72b2f9b1d8b2bad7c7f02',
           codigo: "ASUCO1108-SEC01",
@@ -91,7 +91,7 @@ describe('Validaciones de Matrícula (RF y RNF)', () => {
     const historial = new Map();
     historial.set("ASUCO1482", 2); // POO desaprobada 2 veces
 
-    jest.spyOn(Estudiante, 'findById').mockResolvedValue({
+    vi.spyOn(Estudiante, 'findById').mockResolvedValue({
       nombre: "José Pérez",
       tieneDeudas: false,
       tasaPagada: true,
@@ -99,15 +99,15 @@ describe('Validaciones de Matrícula (RF y RNF)', () => {
       planVigente: true,
       cursosAprobados: ["ASUCO1312"],
       historialDesaprobados: historial,
-      save: jest.fn().mockResolvedValue(true)
+      save: vi.fn().mockResolvedValue(true)
     });
 
-    // Cambiar seccionIds en la petición para que coincida con las 5 secciones mockeadas
+    // Cambiar seccionIds en la petición para que coincida con las 5 secciones mockeas
     req.body.seccionIds = ['1', '2', '3', '4', '5'];
 
     // Mock 5 secciones (total 20 créditos)
-    jest.spyOn(Seccion, 'find').mockReturnValue({
-      populate: jest.fn().mockResolvedValue([
+    vi.spyOn(Seccion, 'find').mockReturnValue({
+      populate: vi.fn().mockResolvedValue([
         { _id: '1', curso: { codigo: "A", creditos: 4, prerrequisitos: [] }, horario: [{ dia: 0, franja: 1 }], vacantesDisponibles: 20 },
         { _id: '2', curso: { codigo: "B", creditos: 4, prerrequisitos: [] }, horario: [{ dia: 1, franja: 1 }], vacantesDisponibles: 20 },
         { _id: '3', curso: { codigo: "C", creditos: 4, prerrequisitos: [] }, horario: [{ dia: 2, franja: 1 }], vacantesDisponibles: 20 },
@@ -126,13 +126,13 @@ describe('Validaciones de Matrícula (RF y RNF)', () => {
 
   test('RF-06: Asignaturas de Investigación no pueden solicitarse de forma dirigida', async () => {
     // Mock Estudiante y Curso
-    jest.spyOn(Estudiante, 'findById').mockResolvedValue({
+    vi.spyOn(Estudiante, 'findById').mockResolvedValue({
       nombre: "Clara Benítez",
       cantidadDirigidos: 0,
       historialDesaprobados: new Map()
     });
 
-    jest.spyOn(Curso, 'findById').mockResolvedValue({
+    vi.spyOn(Curso, 'findById').mockResolvedValue({
       codigo: "ASUCO1580",
       nombre: "Taller de Investigación 1",
       prerrequisitos: []
