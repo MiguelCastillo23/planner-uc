@@ -79,6 +79,7 @@ export const LoginPortal = ({
               placeholder="Usuario (admin)" 
               value={adminUser}
               onChange={(e) => setAdminUser(e.target.value)}
+              data-cy="admin-user-input"
               style={{
                 padding: '10px 12px',
                 borderRadius: '8px',
@@ -93,6 +94,7 @@ export const LoginPortal = ({
               placeholder="Contraseña (admin)" 
               value={adminPass}
               onChange={(e) => setAdminPass(e.target.value)}
+              data-cy="admin-pass-input"
               style={{
                 padding: '10px 12px',
                 borderRadius: '8px',
@@ -105,6 +107,7 @@ export const LoginPortal = ({
             {errorAdmin && <span style={{ color: '#f87171', fontSize: '0.75rem' }}>{errorAdmin}</span>}
             <button 
               type="submit"
+              data-cy="admin-login-button"
               style={{
                 padding: '10px',
                 borderRadius: '8px',
@@ -137,6 +140,7 @@ export const LoginPortal = ({
             <select
               value={selectedStudentId}
               onChange={(e) => setSelectedStudentId(e.target.value)}
+              data-cy="student-select"
               style={{
                 flexGrow: 1,
                 padding: '10px',
@@ -156,6 +160,7 @@ export const LoginPortal = ({
             <button
               onClick={handleStudentLogin}
               disabled={!selectedStudentId}
+              data-cy="student-login-button"
               style={{
                 padding: '10px 16px',
                 borderRadius: '8px',
@@ -187,6 +192,7 @@ export const LoginPortal = ({
             <select
               value={selectedDocenteId}
               onChange={(e) => setSelectedDocenteId(e.target.value)}
+              data-cy="docente-select"
               style={{
                 flexGrow: 1,
                 padding: '10px',
@@ -206,6 +212,7 @@ export const LoginPortal = ({
             <button
               onClick={handleDocenteLogin}
               disabled={!selectedDocenteId}
+              data-cy="docente-login-button"
               style={{
                 padding: '10px 16px',
                 borderRadius: '8px',

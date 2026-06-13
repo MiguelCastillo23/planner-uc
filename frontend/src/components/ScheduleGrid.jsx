@@ -89,7 +89,7 @@ const ScheduleGrid = ({ asignaciones = [], isDark = true }) => {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} data-cy="schedule-grid">
       <div style={styles.grid}>
         {/* Cabecera de Días */}
         <div style={styles.header}>FRANJA HORARIA</div>

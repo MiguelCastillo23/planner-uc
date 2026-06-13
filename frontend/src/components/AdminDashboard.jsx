@@ -1,7 +1,64 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 const ScheduleGrid = lazy(() => import('./ScheduleGrid'));
 
+export const useDashboardMetrics = (estudiantesSimulados = [], seccionesDisponibles = []) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [metrics, setMetrics] = useState({
+    totalAlumnos: 0,
+    matriculados: 0,
+    porcentajeMatriculados: 0,
+    totalVacantesOfrecidas: 0,
+    vacantesDisponibles: 0,
+    vacantesOcupadas: 0,
+    porcentajeOcupacionAulas: 0
+  });
 
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setError(null);
+    
+    const timer = setTimeout(() => {
+      if (!active) return;
+      try {
+        const totalAlumnos = estudiantesSimulados.length;
+        const matriculados = estudiantesSimulados.filter(e => e.estadoMatricula === 'Matriculado').length;
+        const porcentajeMatriculados = totalAlumnos > 0 ? Math.round((matriculados / totalAlumnos) * 100) : 0;
+
+        let totalVacantesOfrecidas = 0;
+        let vacantesDisponibles = 0;
+        seccionesDisponibles.forEach(sec => {
+          totalVacantesOfrecidas += (sec.vacantesTotales || 0);
+          vacantesDisponibles += (sec.vacantesDisponibles || 0);
+        });
+        const vacantesOcupadas = totalVacantesOfrecidas - vacantesDisponibles;
+        const porcentajeOcupacionAulas = totalVacantesOfrecidas > 0 ? Math.round((vacantesOcupadas / totalVacantesOfrecidas) * 100) : 0;
+
+        setMetrics({
+          totalAlumnos,
+          matriculados,
+          porcentajeMatriculados,
+          totalVacantesOfrecidas,
+          vacantesDisponibles,
+          vacantesOcupadas,
+          porcentajeOcupacionAulas
+        });
+      } catch (err) {
+        setError(err.message || 'Error calculando métricas');
+      } finally {
+        setLoading(false);
+      }
+    }, 50);
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [estudiantesSimulados, seccionesDisponibles]);
+
+  return { ...metrics, loading, error };
+};
 
 export const AdminDashboard = ({ 
   estudiantesSimulados = [], 
@@ -10,6 +67,18 @@ export const AdminDashboard = ({
   onGenerarGlobal, 
   loading 
 }) => {
+  const {
+    totalAlumnos,
+    matriculados,
+    porcentajeMatriculados,
+    totalVacantesOfrecidas,
+    vacantesDisponibles,
+    vacantesOcupadas,
+    porcentajeOcupacionAulas,
+    loading: metricsLoading,
+    error: metricsError
+  } = useDashboardMetrics(estudiantesSimulados, seccionesDisponibles);
+
   const [seccionActiva, setSeccionActiva] = useState('kpis'); // 'kpis' | 'programacion' | 'alumnos' | 'mantenimiento' | 'ecologia'
   const [busquedaAlumno, setBusquedaAlumno] = useState('');
   const [ecoMetrics, setEcoMetrics] = useState({ totalRequests: 0, co2Total: 0, bytesTotal: 0 });
@@ -326,6 +395,7 @@ export const AdminDashboard = ({
           <button
             key={item.id}
             onClick={() => setSeccionActiva(item.id)}
+            data-cy={`tab-${item.id}`}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -415,56 +485,72 @@ export const AdminDashboard = ({
           <div>
             <h3 style={{ margin: '0 0 20px 0', color: '#f8fafc', fontSize: '1.4rem', fontWeight: '800' }}>Panel de KPIs y Estado de la Universidad</h3>
             
-            {/* GRID DE CARDS */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '30px' }}>
-              <div style={{ background: '#0f172a', padding: '20px', borderRadius: '12px', border: '1px solid #334155' }}>
-                <span style={{ fontSize: '0.8rem', color: '#94a3b8', textTransform: 'uppercase' }}>Tasa de Matrícula</span>
-                <h2 style={{ margin: '10px 0 5px 0', color: '#38bdf8', fontSize: '2rem', fontWeight: 'bold' }}>{porcentajeMatriculados}%</h2>
-                <p style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>{matriculados} de {totalAlumnos} alumnos matriculados</p>
+            {metricsLoading && (
+              <div role="status" aria-label="loading-metrics" style={{ color: '#38bdf8', padding: '20px', textAlign: 'center', fontWeight: 'bold' }}>
+                Cargando métricas del dashboard...
               </div>
-              <div style={{ background: '#0f172a', padding: '20px', borderRadius: '12px', border: '1px solid #334155' }}>
-                <span style={{ fontSize: '0.8rem', color: '#94a3b8', textTransform: 'uppercase' }}>Ocupación de Aulas</span>
-                <h2 style={{ margin: '10px 0 5px 0', color: '#10b981', fontSize: '2rem', fontWeight: 'bold' }}>{porcentajeOcupacionAulas}%</h2>
-                <p style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>{vacantesOcupadas} vacantes ocupadas físicas</p>
-              </div>
-              <div style={{ background: '#0f172a', padding: '20px', borderRadius: '12px', border: '1px solid #334155' }}>
-                <span style={{ fontSize: '0.8rem', color: '#94a3b8', textTransform: 'uppercase' }}>Oferta Académica</span>
-                <h2 style={{ margin: '10px 0 5px 0', color: '#c084fc', fontSize: '2rem', fontWeight: 'bold' }}>{seccionesDisponibles.length}</h2>
-                <p style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>Secciones programadas en 10 ciclos</p>
-              </div>
-            </div>
+            )}
 
-            {/* DETALLES DE CAPACIDAD Y ESTADO */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-              <div style={{ background: '#0f172a', padding: '20px', borderRadius: '12px', border: '1px solid #334155' }}>
-                <h4 style={{ margin: '0 0 12px 0', color: '#f8fafc', fontSize: '0.95rem' }}>Aforo y Vacantes por Sección</h4>
-                <div style={{ fontSize: '0.85rem', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Total Vacantes Ofertadas:</span>
-                    <span style={{ fontWeight: 'bold' }}>{totalVacantesOfrecidas}</span>
+            {metricsError && (
+              <div role="alert" aria-label="error-metrics" style={{ color: '#ef4444', padding: '20px', textAlign: 'center', fontWeight: 'bold' }}>
+                Error al cargar métricas: {metricsError}
+              </div>
+            )}
+
+            {!metricsLoading && !metricsError && (
+              <>
+                {/* GRID DE CARDS */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '30px' }}>
+                  <div style={{ background: '#0f172a', padding: '20px', borderRadius: '12px', border: '1px solid #334155' }}>
+                    <span style={{ fontSize: '0.8rem', color: '#94a3b8', textTransform: 'uppercase' }}>Tasa de Matrícula</span>
+                    <h2 style={{ margin: '10px 0 5px 0', color: '#38bdf8', fontSize: '2rem', fontWeight: 'bold' }}>{porcentajeMatriculados}%</h2>
+                    <p style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>{matriculados} de {totalAlumnos} alumnos matriculados</p>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Total Vacantes Disponibles:</span>
-                    <span style={{ fontWeight: 'bold', color: '#10b981' }}>{vacantesDisponibles}</span>
+                  <div style={{ background: '#0f172a', padding: '20px', borderRadius: '12px', border: '1px solid #334155' }}>
+                    <span style={{ fontSize: '0.8rem', color: '#94a3b8', textTransform: 'uppercase' }}>Ocupación de Aulas</span>
+                    <h2 style={{ margin: '10px 0 5px 0', color: '#10b981', fontSize: '2rem', fontWeight: 'bold' }}>{porcentajeOcupacionAulas}%</h2>
+                    <p style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>{vacantesOcupadas} vacantes ocupadas físicas</p>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Total Inscritos:</span>
-                    <span style={{ fontWeight: 'bold', color: '#38bdf8' }}>{vacantesOcupadas}</span>
+                  <div style={{ background: '#0f172a', padding: '20px', borderRadius: '12px', border: '1px solid #334155' }}>
+                    <span style={{ fontSize: '0.8rem', color: '#94a3b8', textTransform: 'uppercase' }}>Oferta Académica</span>
+                    <h2 style={{ margin: '10px 0 5px 0', color: '#c084fc', fontSize: '2rem', fontWeight: 'bold' }}>{seccionesDisponibles.length}</h2>
+                    <p style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>Secciones programadas en 10 ciclos</p>
                   </div>
                 </div>
-              </div>
 
-              <div style={{ background: '#0f172a', padding: '20px', borderRadius: '12px', border: '1px solid #334155' }}>
-                <h4 style={{ margin: '0 0 12px 0', color: '#f8fafc', fontSize: '0.95rem' }}>Rendimiento del Plan Académico</h4>
-                <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.5', marginBottom: '10px' }}>
-                  La distribución actual de horarios minimiza los cruces. Las secciones están preestablecidas para evitar traslapes del profesorado y aulas físicas.
-                </p>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <span style={{ fontSize: '1.2rem' }}>🏆</span>
-                  <span style={{ fontSize: '0.8rem', color: '#34d399', fontWeight: '600' }}>Algoritmo Genético optimizado</span>
+                {/* DETALLES DE CAPACIDAD Y ESTADO */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                  <div style={{ background: '#0f172a', padding: '20px', borderRadius: '12px', border: '1px solid #334155' }}>
+                    <h4 style={{ margin: '0 0 12px 0', color: '#f8fafc', fontSize: '0.95rem' }}>Aforo y Vacantes por Sección</h4>
+                    <div style={{ fontSize: '0.85rem', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>Total Vacantes Ofertadas:</span>
+                        <span style={{ fontWeight: 'bold' }}>{totalVacantesOfrecidas}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>Total Vacantes Disponibles:</span>
+                        <span style={{ fontWeight: 'bold', color: '#10b981' }}>{vacantesDisponibles}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>Total Inscritos:</span>
+                        <span style={{ fontWeight: 'bold', color: '#38bdf8' }}>{vacantesOcupadas}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ background: '#0f172a', padding: '20px', borderRadius: '12px', border: '1px solid #334155' }}>
+                    <h4 style={{ margin: '0 0 12px 0', color: '#f8fafc', fontSize: '0.95rem' }}>Rendimiento del Plan Académico</h4>
+                    <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.5', marginBottom: '10px' }}>
+                      La distribución actual de horarios minimiza los cruces. Las secciones están preestablecidas para evitar traslapes del profesorado y aulas físicas.
+                    </p>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <span style={{ fontSize: '1.2rem' }}>🏆</span>
+                      <span style={{ fontSize: '0.8rem', color: '#34d399', fontWeight: '600' }}>Algoritmo Genético optimizado</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </>
+            )}
           </div>
         )}
 
@@ -890,6 +976,7 @@ export const AdminDashboard = ({
             <div style={{ display: 'flex', gap: '8px', background: '#0f172a', padding: '6px', borderRadius: '10px', marginBottom: '25px', border: '1px solid #334155', width: 'fit-content' }}>
               <button 
                 onClick={() => setSubMantenimiento('carreras')}
+                data-cy="subtab-carreras"
                 style={{
                   padding: '8px 16px',
                   borderRadius: '8px',
@@ -907,6 +994,7 @@ export const AdminDashboard = ({
               </button>
               <button 
                 onClick={() => setSubMantenimiento('cursos')}
+                data-cy="subtab-cursos"
                 style={{
                   padding: '8px 16px',
                   borderRadius: '8px',
@@ -924,6 +1012,7 @@ export const AdminDashboard = ({
               </button>
               <button 
                 onClick={() => setSubMantenimiento('docentes')}
+                data-cy="subtab-docentes"
                 style={{
                   padding: '8px 16px',
                   borderRadius: '8px',
@@ -941,6 +1030,7 @@ export const AdminDashboard = ({
               </button>
               <button 
                 onClick={() => setSubMantenimiento('aulas')}
+                data-cy="subtab-aulas"
                 style={{
                   padding: '8px 16px',
                   borderRadius: '8px',
@@ -1117,6 +1207,7 @@ export const AdminDashboard = ({
                         placeholder="Ej. ING-SIS" 
                         value={carreraForm.codigo}
                         onChange={(e) => setCarreraForm({ ...carreraForm, codigo: e.target.value })}
+                        data-cy="carrera-codigo-input"
                         style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '0.85rem', outline: 'none' }}
                       />
                     </div>
@@ -1128,11 +1219,12 @@ export const AdminDashboard = ({
                         placeholder="Ej. Ingeniería de Sistemas e Informática" 
                         value={carreraForm.nombre}
                         onChange={(e) => setCarreraForm({ ...carreraForm, nombre: e.target.value })}
+                        data-cy="carrera-nombre-input"
                         style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '0.85rem', outline: 'none' }}
                       />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                      <button type="submit" style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: '#38bdf8', color: '#0f172a', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.85rem' }}>
+                      <button type="submit" data-cy="carrera-save-button" style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: '#38bdf8', color: '#0f172a', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.85rem' }}>
                         {carreraEditando ? 'Actualizar' : 'Guardar'}
                       </button>
                       {carreraEditando && (
@@ -1159,6 +1251,7 @@ export const AdminDashboard = ({
                           placeholder="Ej. ASUCO0316" 
                           value={cursoForm.codigo}
                           onChange={(e) => setCursoForm({ ...cursoForm, codigo: e.target.value })}
+                          data-cy="curso-codigo-input"
                           style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '0.85rem', outline: 'none' }}
                         />
                       </div>
@@ -1170,6 +1263,7 @@ export const AdminDashboard = ({
                           min="1" max="6"
                           value={cursoForm.creditos}
                           onChange={(e) => setCursoForm({ ...cursoForm, creditos: parseInt(e.target.value, 10) })}
+                          data-cy="curso-creditos-input"
                           style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '0.85rem', outline: 'none' }}
                         />
                       </div>
@@ -1182,6 +1276,7 @@ export const AdminDashboard = ({
                         placeholder="Ej. Inteligencia Artificial" 
                         value={cursoForm.nombre}
                         onChange={(e) => setCursoForm({ ...cursoForm, nombre: e.target.value })}
+                        data-cy="curso-nombre-input"
                         style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '0.85rem', outline: 'none' }}
                       />
                     </div>
@@ -1191,6 +1286,7 @@ export const AdminDashboard = ({
                         <select
                           value={cursoForm.semestre}
                           onChange={(e) => setCursoForm({ ...cursoForm, semestre: parseInt(e.target.value, 10) })}
+                          data-cy="curso-semestre-select"
                           style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '0.85rem', outline: 'none', cursor: 'pointer' }}
                         >
                           {[...Array(10)].map((_, i) => (
@@ -1203,6 +1299,7 @@ export const AdminDashboard = ({
                         <select
                           value={cursoForm.modalidad}
                           onChange={(e) => setCursoForm({ ...cursoForm, modalidad: e.target.value })}
+                          data-cy="curso-modalidad-select"
                           style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '0.85rem', outline: 'none', cursor: 'pointer' }}
                         >
                           <option value="Presencial">Presencial</option>
@@ -1236,7 +1333,7 @@ export const AdminDashboard = ({
                       />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                      <button type="submit" style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: '#38bdf8', color: '#0f172a', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.85rem' }}>
+                      <button type="submit" data-cy="curso-save-button" style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: '#38bdf8', color: '#0f172a', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.85rem' }}>
                         {cursoEditando ? 'Actualizar' : 'Guardar'}
                       </button>
                       {cursoEditando && (

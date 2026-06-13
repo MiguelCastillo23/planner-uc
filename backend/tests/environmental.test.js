@@ -1,11 +1,22 @@
 import { environmentalTracker } from '../middlewares/environmentalTracker.js';
 import EnvironmentalMetric from '../models/EnvironmentalMetric.js';
 import { jest } from '@jest/globals';
+import request from 'supertest';
+import { setupIntegration, teardownIntegration, logApiCall } from './integrationHelper.js';
 
-// Spy on the DB model instead of full module mock to avoid ESM issues
-jest.spyOn(EnvironmentalMetric, 'create').mockImplementation(() => Promise.resolve({}));
 
 describe('Environmental Tracker Middleware', () => {
+  let createSpy;
+
+  beforeAll(() => {
+    createSpy = jest.spyOn(EnvironmentalMetric, 'create').mockImplementation(() => Promise.resolve({}));
+  });
+
+  afterAll(() => {
+    if (createSpy) {
+      createSpy.mockRestore();
+    }
+  });
   let req;
   let res;
   let next;
@@ -64,5 +75,36 @@ describe('Environmental Tracker Middleware', () => {
     await res.finishCallback();
 
     expect(EnvironmentalMetric.create).not.toHaveBeenCalled();
+  });
+});
+
+describe('Pruebas de Integración - Tracker Ambiental (Supertest)', () => {
+  let serverUrl;
+
+  beforeAll(async () => {
+    serverUrl = await setupIntegration();
+  }, 30000);
+
+  afterAll(async () => {
+    await teardownIntegration();
+  }, 30000);
+
+  test('Debe registrar métricas en la base de datos tras una petición GET y exponerlas en el dashboard ambiental', async () => {
+    // 1. Limpiar métricas en memoria para asegurar conteo exacto
+    await EnvironmentalMetric.deleteMany({});
+
+    // 2. Realizar petición de prueba para activar el middleware
+    const resGet = await request(serverUrl).get('/api/cursos');
+    logApiCall('GET', '/api/cursos', resGet.statusCode);
+    expect(resGet.statusCode).toBe(200);
+
+    // 3. Realizar petición al dashboard para validar el reporte consolidado
+    const resImpact = await request(serverUrl).get('/environmental-impact');
+    logApiCall('GET', '/environmental-impact', resImpact.statusCode, { length: resImpact.text?.length });
+    
+    expect(resImpact.statusCode).toBe(200);
+    expect(resImpact.headers['content-type']).toContain('text/html');
+    expect(resImpact.text).toContain('Dashboard de Impacto Ambiental');
+    expect(resImpact.text).toContain('kpi-card');
   });
 });

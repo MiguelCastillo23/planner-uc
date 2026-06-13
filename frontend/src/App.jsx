@@ -476,6 +476,7 @@ function App() {
           
           <button
             onClick={handleLogout}
+            data-cy="logout-button"
             style={{
               padding: '10px 20px',
               borderRadius: '8px',
@@ -495,7 +496,9 @@ function App() {
 
       {/* ALERTAS GLOBALES */}
       {alerta && (
-        <div style={{
+        <div 
+          data-cy="alert-message"
+          style={{
           padding: '16px 24px',
           borderRadius: '12px',
           marginBottom: '25px',
@@ -714,7 +717,9 @@ function App() {
                   </p>
                 </div>
                 
-                <span style={{
+                <span 
+                  data-cy="credits-counter"
+                  style={{
                   padding: '8px 16px',
                   borderRadius: '8px',
                   fontWeight: 'bold',
@@ -755,6 +760,7 @@ function App() {
                               checked={isSelected}
                               onChange={() => handleToggleSeccion(sec._id)}
                               disabled={estudianteActivo.estadoMatricula === 'Matriculado'}
+                              data-cy={`section-checkbox-${sec.codigo}`}
                               style={{ transform: 'scale(1.3)', cursor: 'pointer' }}
                             />
                             <div>
@@ -816,6 +822,7 @@ function App() {
                 <button 
                   onClick={handleMatricularse}
                   disabled={loading || estudianteActivo.estadoMatricula === 'Matriculado'}
+                  data-cy="confirm-matricula-button"
                   style={{
                     flexGrow: 1,
                     padding: '14px 20px',
@@ -835,6 +842,7 @@ function App() {
                 <button 
                   onClick={handleAutoMatriculaAsistente}
                   disabled={loadingAsistente || estudianteActivo.estadoMatricula === 'Matriculado'}
+                  data-cy="genetic-assistant-button"
                   style={{
                     padding: '14px 24px',
                     borderRadius: '10px',
