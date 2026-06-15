@@ -193,22 +193,82 @@ export class GeneticEngine {
     }
   }
 
-  calcularFitnessAlumno(individuo) {
+  calcularFitnessAlumno(individuo, preferencias = {}) {
     try {
       let conflictos = 0;
       let huecosHorarios = 0;
       const agendaEstudiante = new Map();
 
+      // 1. Conflictos de Horario Académico (Cruces de clases)
       individuo.genes.forEach(sec => {
         sec.horario.forEach(h => {
           const claveHora = `${h.dia}-${h.franja}`;
           if (agendaEstudiante.has(claveHora)) {
-            conflictos += 15;
+            conflictos += 15; // Cruce duro entre asignaturas
           }
           agendaEstudiante.set(claveHora, sec);
         });
       });
 
+      // 2. Evaluar Cruce con Horario Laboral (OWASP A1/Rúbrica)
+      if (preferencias.trabaja && preferencias.diasLaborales && preferencias.diasLaborales.length > 0) {
+        let crucesLaborales = 0;
+        individuo.genes.forEach(sec => {
+          let cursoCruza = false;
+          sec.horario.forEach(h => {
+            const diaNum = Number(h.dia);
+            if (preferencias.diasLaborales.includes(diaNum)) {
+              if (h.franja >= preferencias.franjaLaboralInicio && h.franja <= preferencias.franjaLaboralFin) {
+                cursoCruza = true;
+              }
+            }
+          });
+          if (cursoCruza) {
+            crucesLaborales++;
+          }
+        });
+
+        // Penalización: Si hay más de un (1) curso cruzado con el trabajo -> no apto (penalización severa)
+        if (crucesLaborales > 1) {
+          conflictos += 100;
+        } 
+        // Si hay exactamente uno (1), se permite pero se penaliza (por si no queda otra opción)
+        else if (crucesLaborales === 1) {
+          conflictos += 10;
+        }
+      }
+
+      // 3. Evaluar Preferencia de Turno (Mañana/Tarde/Noche)
+      if (preferencias.preferenciaTurno && preferencias.preferenciaTurno !== 'Ninguno') {
+        individuo.genes.forEach(sec => {
+          sec.horario.forEach(h => {
+            let fueraDeTurno = false;
+            if (preferencias.preferenciaTurno === 'Mañana' && h.franja > 3) fueraDeTurno = true;
+            if (preferencias.preferenciaTurno === 'Tarde' && (h.franja < 4 || h.franja > 6)) fueraDeTurno = true;
+            if (preferencias.preferenciaTurno === 'Noche' && h.franja < 7) fueraDeTurno = true;
+
+            if (fueraDeTurno) {
+              conflictos += 0.5; // Penalización leve por franja fuera de la preferencia
+            }
+          });
+        });
+      }
+
+      // 4. Evaluar Tiempo de Traslado (Promover días compactos si es largo)
+      if (preferencias.tiempoTraslado && preferencias.tiempoTraslado > 60) {
+        const diasConClase = new Set();
+        individuo.genes.forEach(sec => {
+          sec.horario.forEach(h => {
+            diasConClase.add(h.dia);
+          });
+        });
+        // Si viaja más de 60 minutos, penalizar que tenga que ir a la universidad más de 3 días a la semana
+        if (diasConClase.size > 3) {
+          conflictos += (diasConClase.size - 3) * 2.5;
+        }
+      }
+
+      // 5. Espacios vacíos (Huecos) en el horario
       const franjasPorDia = {};
       for (const [clave] of agendaEstudiante) {
         const [dia, franja] = clave.split('-').map(Number);

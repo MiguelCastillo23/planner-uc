@@ -151,10 +151,10 @@ export const procesarMatricula = async (req, res) => {
     }
 
     // 8. Validación de ciclo de verano para Investigación (RNF-03)
-    if (tipoPeriodo === 'Verano') {
+    if (tipoPeriodo === 'Verano' || tipoPeriodo === 'Periodo 0') {
       const tieneInvestigacion = secciones.some(s => s.curso.codigo === "ASUCO1580" || s.curso.codigo === "ASUCO1581");
       if (tieneInvestigacion) {
-        return res.status(400).json({ error: "Restricción de Ciclo: Las asignaturas de Taller de Investigación 1 y 2 no están disponibles para matrícula en ciclos de verano." });
+        return res.status(400).json({ error: "Restricción de Ciclo: Las asignaturas de Taller de Investigación 1 y 2 no están disponibles para matrícula en ciclos de verano (Periodo 0)." });
       }
     }
 
@@ -227,13 +227,32 @@ export const procesarMatricula = async (req, res) => {
 // 2. ASISTENTE GENÉTICO DE AUTO-MATRÍCULA (ESTUDIANTE)
 // ========================================================
 export const autoMatricularAsistente = async (req, res) => {
-  const { estudianteId, cursoIds } = req.body;
+  const { 
+    estudianteId, 
+    cursoIds, 
+    trabaja, 
+    diasLaborales, 
+    franjaLaboralInicio, 
+    franjaLaboralFin, 
+    tiempoTraslado, 
+    preferenciaTurno 
+  } = req.body;
+
   try {
     const estudiante = await Estudiante.findById(estudianteId);
     if (!estudiante) return res.status(404).json({ error: "Estudiante no encontrado." });
 
     const cursosDeseados = await Curso.find({ _id: { $in: cursoIds } });
     const seccionesDisponibles = await Seccion.find({ curso: { $in: cursoIds } }).populate('curso').lean();
+
+    const preferencias = {
+      trabaja: trabaja === true || trabaja === 'true',
+      diasLaborales: Array.isArray(diasLaborales) ? diasLaborales.map(Number) : [],
+      franjaLaboralInicio: Number(franjaLaboralInicio) || 0,
+      franjaLaboralFin: Number(franjaLaboralFin) || 0,
+      tiempoTraslado: Number(tiempoTraslado) || 0,
+      preferenciaTurno: preferenciaTurno || 'Ninguno'
+    };
 
     const motor = new GeneticEngine();
     let mejorIndividuo = null;
@@ -242,7 +261,7 @@ export const autoMatricularAsistente = async (req, res) => {
     // Buscar combinación óptima de secciones
     for (let i = 0; i < 500; i++) {
       const candidato = motor.crearIndividuoAlumno(cursosDeseados, seccionesDisponibles);
-      const fitness = motor.calcularFitnessAlumno(candidato);
+      const fitness = motor.calcularFitnessAlumno(candidato, preferencias);
 
       if (fitness > mejorFitness) {
         mejorFitness = fitness;
@@ -251,10 +270,125 @@ export const autoMatricularAsistente = async (req, res) => {
       if (fitness === 1) break; // Sin cruces y compacto
     }
 
+    // Identificar cruces, calcular porcentaje de satisfacción y generar avisos detallados
+    let satisfaccion = 100;
+    const avisos = [];
+    const crucesLaborales = [];
+
+    if (mejorIndividuo && mejorIndividuo.genes) {
+      // 1. Cruce laboral
+      if (preferencias.trabaja && preferencias.diasLaborales.length > 0) {
+        mejorIndividuo.genes.forEach(sec => {
+          let cursoCruza = false;
+          sec.horario.forEach(h => {
+            const diaNum = Number(h.dia);
+            if (preferencias.diasLaborales.includes(diaNum)) {
+              if (h.franja >= preferencias.franjaLaboralInicio && h.franja <= preferencias.franjaLaboralFin) {
+                cursoCruza = true;
+              }
+            }
+          });
+          if (cursoCruza) {
+            const nombreCurso = sec.curso?.nombre || "Asignatura";
+            crucesLaborales.push(nombreCurso);
+          }
+        });
+
+        if (crucesLaborales.length > 0) {
+          if (crucesLaborales.length === 1) {
+            satisfaccion -= 30;
+            avisos.push(`El curso "${crucesLaborales[0]}" se cruza con tu horario laboral (sección asignada excepcionalmente).`);
+          } else {
+            satisfaccion -= 60;
+            avisos.push(`Cruce múltiple con tu horario laboral en los cursos: ${crucesLaborales.join(', ')}.`);
+          }
+        }
+      }
+
+      // 2. Preferencia de Turno de Estudio
+      if (preferencias.preferenciaTurno && preferencias.preferenciaTurno !== 'Ninguno') {
+        const cursosFueraDeTurno = new Set();
+        mejorIndividuo.genes.forEach(sec => {
+          sec.horario.forEach(h => {
+            let fueraDeTurno = false;
+            if (preferencias.preferenciaTurno === 'Mañana' && h.franja > 3) fueraDeTurno = true;
+            if (preferencias.preferenciaTurno === 'Tarde' && (h.franja < 4 || h.franja > 6)) fueraDeTurno = true;
+            if (preferencias.preferenciaTurno === 'Noche' && h.franja < 7) fueraDeTurno = true;
+
+            if (fueraDeTurno) {
+              const nombreCurso = sec.curso?.nombre || "Asignatura";
+              cursosFueraDeTurno.add(nombreCurso);
+            }
+          });
+        });
+
+        if (cursosFueraDeTurno.size > 0) {
+          cursosFueraDeTurno.forEach(nombreCurso => {
+            satisfaccion -= 10;
+            avisos.push(`El curso "${nombreCurso}" no se pudo programar en el turno ${preferencias.preferenciaTurno} por disponibilidad.`);
+          });
+        }
+      }
+
+      // 3. Tiempo de Traslado a la U
+      if (preferencias.tiempoTraslado && preferencias.tiempoTraslado > 60) {
+        const diasConClase = new Set();
+        mejorIndividuo.genes.forEach(sec => {
+          sec.horario.forEach(h => {
+            diasConClase.add(h.dia);
+          });
+        });
+        if (diasConClase.size > 3) {
+          satisfaccion -= 15;
+          avisos.push(`Asistirás a la universidad ${diasConClase.size} días a la semana a pesar de tener un traslado largo (${preferencias.tiempoTraslado} min).`);
+        }
+      }
+
+      // 4. Huecos o bloques libres en el horario
+      let huecosHorarios = 0;
+      const agendaEstudiante = new Map();
+      mejorIndividuo.genes.forEach(sec => {
+        sec.horario.forEach(h => {
+          const claveHora = `${h.dia}-${h.franja}`;
+          agendaEstudiante.set(claveHora, sec);
+        });
+      });
+
+      const franjasPorDia = {};
+      for (const [clave] of agendaEstudiante) {
+        const [dia, franja] = clave.split('-').map(Number);
+        if (!franjasPorDia[dia]) franjasPorDia[dia] = [];
+        franjasPorDia[dia].push(franja);
+      }
+
+      Object.keys(franjasPorDia).forEach(dia => {
+        const slots = franjasPorDia[dia].sort((a, b) => a - b);
+        if (slots.length > 1) {
+          for (let idx = 0; idx < slots.length - 1; idx++) {
+            const dif = slots[idx + 1] - slots[idx];
+            if (dif > 1) {
+              huecosHorarios += (dif - 1);
+            }
+          }
+        }
+      });
+
+      if (huecosHorarios > 0) {
+        satisfaccion -= huecosHorarios * 3;
+        avisos.push(`El horario sugerido contiene ${huecosHorarios} hora(s) libre(s) (hueco) entre clases.`);
+      }
+    }
+
+    satisfaccion = Math.max(0, Math.min(100, Math.round(satisfaccion)));
+
     res.json({
       success: true,
       fitness: mejorFitness,
-      seccionesSugeridas: mejorIndividuo.genes
+      seccionesSugeridas: mejorIndividuo ? mejorIndividuo.genes : [],
+      cruceLaboral: crucesLaborales.length > 0,
+      crucesLaborales,
+      satisfaccion,
+      avisos
     });
 
   } catch (error) {

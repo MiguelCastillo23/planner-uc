@@ -2,6 +2,17 @@ import { sanitizeNoSQL, noSQLSanitizer, errorHandler } from '../middlewares/secu
 import { jest } from '@jest/globals';
 
 describe('Security Middlewares - Pruebas Unitarias', () => {
+  let warnSpy, errorSpy;
+
+  beforeAll(() => {
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    warnSpy.mockRestore();
+    errorSpy.mockRestore();
+  });
 
   describe('sanitizeNoSQL (Sanitizador de Inyección MongoDB)', () => {
     test('Debe eliminar claves que inicien con "$" o contengan "."', () => {
