@@ -84,7 +84,7 @@ Durante la exposición, puedes demostrar el funcionamiento del sistema en vivo c
     *   Abre una consola y ejecuta las pruebas del backend:
         ```bash
         cd backend
-        npm test tests/security.test.js --globalSetup="" --globalTeardown="" --no-coverage
+        node --experimental-vm-modules node_modules/jest/bin/jest.js tests/security.test.js --config=jest.unit.config.js
         ```
     *   Ejecuta las pruebas del frontend en otra pestaña:
         ```bash

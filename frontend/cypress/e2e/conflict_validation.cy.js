@@ -19,11 +19,11 @@ describe('Validaciones Funcionales - Generación Sin Conflictos', () => {
       seccionesSugeridas: [mockSecciones[0]]
     }).as('runGeneticAssistant');
 
-    // Seleccionar primero una asignatura para habilitar el asistente
-    cy.get('[data-cy="section-checkbox-SEC01"]').click();
-
-    // Hacer clic en el botón del asistente genético
+    // Hacer clic en el botón del asistente genético (abre el modal)
     cy.get('[data-cy="genetic-assistant-button"]').click();
+
+    // Hacer clic en el botón de confirmar de la encuesta
+    cy.get('[data-cy="submit-survey-button"]').click();
 
     // Esperar respuesta de la API interceptada
     cy.wait('@runGeneticAssistant');
