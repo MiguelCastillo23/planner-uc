@@ -311,17 +311,38 @@ export const AdminDashboard = ({
     <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '30px', minHeight: '600px' }}>
       
       {/* SIDEBAR NAVIGATION */}
-      <aside style={{ 
-        background: '#1e293b', 
-        borderRadius: '16px', 
+      <aside className="glass-panel" style={{ 
         padding: '20px', 
-        border: '1px solid #334155',
         display: 'flex',
         flexDirection: 'column',
         gap: '8px',
         alignSelf: 'start'
       }}>
-        <h4 style={{ margin: '0 0 15px 10px', color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Menú Admin</h4>
+        {/* Profile Admin Badge */}
+        <div style={{ textAlign: 'center', padding: '12px 0', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: '15px' }}>
+          <div style={{
+            width: '50px',
+            height: '50px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #38bdf8 0%, #6366f1 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 10px auto',
+            fontSize: '1.3rem',
+            color: '#000',
+            fontWeight: 'bold',
+            boxShadow: '0 4px 15px rgba(56, 189, 248, 0.25)'
+          }}>
+            AD
+          </div>
+          <h4 style={{ margin: '0 0 2px 0', color: '#f8fafc', fontSize: '0.9rem', fontWeight: '700' }}>Administrador</h4>
+          <span style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', backgroundColor: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontWeight: 'bold' }}>
+            CONTROL ACADÉMICO
+          </span>
+        </div>
+
+        <h4 style={{ margin: '0 0 10px 10px', color: '#64748b', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Menú Admin</h4>
         {menuItems.map(item => (
           <button
             key={item.id}
@@ -339,8 +360,10 @@ export const AdminDashboard = ({
               fontWeight: '600',
               textAlign: 'left',
               transition: '0.2s',
-              backgroundColor: seccionActiva === item.id ? '#38bdf8' : 'transparent',
-              color: seccionActiva === item.id ? '#0f172a' : '#cbd5e1'
+              backgroundColor: seccionActiva === item.id ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
+              color: seccionActiva === item.id ? '#38bdf8' : '#cbd5e1',
+              borderLeft: seccionActiva === item.id ? '3px solid #38bdf8' : '3px solid transparent',
+              paddingLeft: seccionActiva === item.id ? '13px' : '16px'
             }}
           >
             <span>{item.icon}</span>
@@ -350,12 +373,9 @@ export const AdminDashboard = ({
       </aside>
 
       {/* DASHBOARD CONTENT WORKSPACE */}
-      <main style={{ 
-        background: '#1e293b', 
-        borderRadius: '16px', 
+      <main className="glass-panel" style={{ 
         padding: '24px', 
-        border: '1px solid #334155',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)'
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.4)'
       }}>
 
         {/* Error de conexión con el servidor (Global para el dashboard) */}
