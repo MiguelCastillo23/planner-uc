@@ -108,3 +108,124 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* ==========================================
+   ESTILOS DE ACCESIBILIDAD (WCAG compliance)
+   ========================================== */
+
+/* 1. Contraste Alto */
+html.high-contrast {
+  --bg: #000000 !important;
+  --text: #ffffff !important;
+  --text-h: #ffff00 !important;
+  --border: #ffffff !important;
+  --code-bg: #111111 !important;
+  --accent: #ffff00 !important;
+  --accent-bg: #000000 !important;
+  --accent-border: #ffffff !important;
+}
+
+html.high-contrast,
+html.high-contrast body,
+html.high-contrast div,
+html.high-contrast section,
+html.high-contrast main,
+html.high-contrast header,
+html.high-contrast footer,
+html.high-contrast nav,
+html.high-contrast table,
+html.high-contrast tr,
+html.high-contrast td,
+html.high-contrast th {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+html.high-contrast h1,
+html.high-contrast h2,
+html.high-contrast h3,
+html.high-contrast h4,
+html.high-contrast h5,
+html.high-contrast h6,
+html.high-contrast p,
+html.high-contrast span,
+html.high-contrast label,
+html.high-contrast strong,
+html.high-contrast li {
+  color: #ffff00 !important;
+}
+
+html.high-contrast a {
+  color: #00ffff !important;
+  text-decoration: underline !important;
+}
+
+html.high-contrast button,
+html.high-contrast select,
+html.high-contrast input,
+html.high-contrast textarea {
+  background-color: #000000 !important;
+  color: #ffff00 !important;
+  border: 2px solid #ffff00 !important;
+}
+
+html.high-contrast button:hover,
+html.high-contrast select:hover,
+html.high-contrast input:hover {
+  background-color: #ffff00 !important;
+  color: #000000 !important;
+}
+
+/* 2. Escala de Fuentes */
+html.font-large {
+  font-size: 21px !important;
+}
+html.font-large * {
+  font-size: 1.12rem !important;
+}
+html.font-large h1 {
+  font-size: 3.5rem !important;
+}
+html.font-large h2 {
+  font-size: 1.8rem !important;
+}
+html.font-large h3 {
+  font-size: 1.4rem !important;
+}
+
+html.font-xlarge {
+  font-size: 24px !important;
+}
+html.font-xlarge * {
+  font-size: 1.25rem !important;
+}
+html.font-xlarge h1 {
+  font-size: 4rem !important;
+}
+html.font-xlarge h2 {
+  font-size: 2.1rem !important;
+}
+html.font-xlarge h3 {
+  font-size: 1.6rem !important;
+}
+
+/* 3. Fuente Disléxica */
+html.dyslexic-font * {
+  font-family: 'Comic Sans MS', cursive, sans-serif !important;
+  word-spacing: 0.16em !important;
+  letter-spacing: 0.06em !important;
+  line-height: 1.6 !important;
+}
+
+/* 4. Resaltado de Enlaces e Interactivos */
+html.highlight-links a,
+html.highlight-links button,
+html.highlight-links select,
+html.highlight-links input,
+html.highlight-links textarea {
+  outline: 4px solid #f59e0b !important;
+  outline-offset: 3px !important;
+}
+

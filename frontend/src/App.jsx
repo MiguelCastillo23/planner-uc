@@ -1,6 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { AdminDashboard } from './components/AdminDashboard';
 import { LoginPortal } from './components/LoginPortal';
+import AccessibilityToolbar from './components/AccessibilityToolbar';
 
 const ScheduleGrid = lazy(() => import('./components/ScheduleGrid'));
 
@@ -993,6 +994,9 @@ function App() {
       <footer style={{ marginTop: '50px', borderTop: '1px solid #334155', paddingTop: '20px', textAlign: 'center', fontSize: '0.8rem', color: '#64748b' }}>
         <p>Planner-UC. Optimización del software y eficiencia de recursos académicos - 2026</p>
       </footer>
+
+      {/* TOOLBAR DE ACCESIBILIDAD WCAG */}
+      <AccessibilityToolbar />
 
     </div>
   );
