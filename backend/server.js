@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import compression from 'compression';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { generarHorario } from './controllers/horarioController.js';
 import { generarHorariosGlobales, actualizarEstadoPago } from './controllers/adminController.js';
 import { 
@@ -19,10 +21,28 @@ import { Curso, Docente, Aula, Carrera } from './models/Schemas.js';
 import EnvironmentalMetric from './models/EnvironmentalMetric.js';
 import { environmentalTracker } from './middlewares/environmentalTracker.js';
 import { getEnvironmentalDashboard } from './controllers/environmentalController.js';
+import { noSQLSanitizer, errorHandler } from './middlewares/security.js';
 
 dotenv.config();
 
 const app = express();
+
+// Cabeceras de seguridad HTTP (OWASP A5:2021-Security Misconfiguration)
+app.use(helmet({
+  contentSecurityPolicy: false, // Desactivar CSP estricto para desarrollo local flexible
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+
+// Aplicar rate limiting general para prevenir denegación de servicio (OWASP A1:2021-Broken Access Control)
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 200, // límite de 200 peticiones por ventana por IP
+  message: { error: 'Too many requests', message: 'Límite de peticiones excedido. Intente más tarde.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/', limiter);
+
 // Aplicar middleware de medición ambiental globalmente (debe estar arriba para medir el stream de salida)
 app.use(environmentalTracker);
 
@@ -31,6 +51,9 @@ app.use(compression());
 
 app.use(cors());
 app.use(express.json());
+
+// Sanitización contra NoSQL Injection (OWASP A3:2021-Injection)
+app.use(noSQLSanitizer);
 
 // Ruta pública para el dashboard de impacto ambiental
 app.get('/environmental-impact', getEnvironmentalDashboard);
@@ -256,6 +279,10 @@ app.post('/api/matricula/retiro', procesarRetiroCurso);
 app.post('/api/matricula/reserva', procesarReservaMatricula);
 
 app.post('/api/horarios/generar', generarHorario);
+
+// Manejador de errores global seguro (OWASP A5:2021-Security Misconfiguration / Error Handling)
+app.use(errorHandler);
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
