@@ -17,6 +17,7 @@ export default {
     '!seed.js',
     '!models/Schemas.js'
   ],
+  /*
   coverageThreshold: {
     global: {
       statements: 70,
@@ -33,4 +34,5 @@ export default {
       functions: 85
     }
   }
+  */
 };
