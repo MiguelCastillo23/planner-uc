@@ -9,8 +9,7 @@ Este documento contiene la especificación del cuestionario SUS (System Usabilit
 El cuestionario consta de 10 afirmaciones que los usuarios califican en una escala Likert de 1 (Muy en desacuerdo) a 5 (Muy de acuerdo).
 
 | ID | Ítem / Pregunta |
-
-|:---:|:---|
+| :---: | :--- |
 | **P1** | Creo que me gustaría usar este sistema frecuentemente. |
 | **P2** | Encontré el sistema innecesariamente complejo. |
 | **P3** | Pensé que el sistema era fácil de usar. |
