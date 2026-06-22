@@ -106,6 +106,10 @@ npm test
 ## 📂 Documentación del Proyecto
 
 <details>
+<summary><b>🛠️ Inicio y desarrollo del proyecto</b></summary>
+
+<blockquote>
+<details>
 <summary><b>📦 V 1.0.0</b></summary>
 
 ### Gestión Inicial (Sprint 0)
@@ -125,7 +129,9 @@ npm test
 - 🧠 [Constitución y Reglas (Constitution.md)](./docs/inicio/v1.0.0/constitution.md)
 
 </details>
+</blockquote>
 
+<blockquote>
 <details>
 <summary><b>🚀 V 2.0.0</b></summary>
 
@@ -135,8 +141,19 @@ npm test
 3. 📋 [Reporte de Pruebas Aplicadas](./docs/inicio/v2.0.0/3_reporte_pruebas.md)
 
 </details>
+</blockquote>
 
----
+</details>
+
+<details>
+<summary><b>🎓 Cierre del proyecto</b></summary>
+
+### Documentos Finales de Entrega
+1. 📑 [Informe Final del Proyecto](./docs/cierre/1_Informe_Final.md)
+2. 🧠 [Informe Final de Lecciones Aprendidas](./docs/cierre/2_Lecciones_Aprendidas.md)
+
+</details>
+
 
 ## 🔗 Herramientas de Gestión
 *   **Jira Software:** [Tablero de Control y Backlog](https://atlassian.net)
