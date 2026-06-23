@@ -151,6 +151,14 @@ npm test
 ### Documentos Finales de Entrega
 1. 📑 [Informe Final del Proyecto](./docs/cierre/1_Informe_Final.md)
 2. 🧠 [Informe Final de Lecciones Aprendidas](./docs/cierre/2_Lecciones_Aprendidas.md)
+3. ⚠️ [Registro de Riesgos](./docs/cierre/3_Registros_Riesgos.md)
+4. 💥 [Registro de Incidentes o Problemas](./docs/cierre/4_Incidentes.md)
+5. 🚧 [Registro de Impedimentos](./docs/cierre/5_Impedimentos.md)
+6. 🐛 [Registro de Defectos](./docs/cierre/6_Registro_Defectos.md)
+7. 📋 [Registro de Supuestos](./docs/cierre/7_Supuestos.md)
+8. 📜 [Acta de Constitución del Proyecto](./docs/cierre/8_Constitucion.md)
+9. 📢 [Declaración de Trabajo (SOW)](./docs/cierre/9_Declaracion.md)
+10. 🎓[Documentación de Capacitación](./docs/cierre/91_Capacitacion.md)
 
 </details>
 
