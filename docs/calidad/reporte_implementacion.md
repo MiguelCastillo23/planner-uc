@@ -16,7 +16,7 @@ planner-uc/
 │   └── calidad/
 │       ├── analisis_completo.md        <-- Diagnóstico inicial de calidad y brechas
 │       ├── SUS_Instrumento.md          <-- Instrumento SUS oficial y resultados simulados
-│       └── reporte_implementacion.md   <-- Este documento (Guía de Exposición)
+│       └── reporte_implementacion.md   <-- Este documento
 ├── backend/
 │   ├── middlewares/
 │   │   └── security.js                 <-- Middleware contra NoSQL Injection y Manejo Seguro de Errores
