@@ -17,7 +17,7 @@ import {
   procesarRetiroCurso, 
   procesarReservaMatricula 
 } from './controllers/studentController.js';
-import { Curso, Docente, Aula, Carrera } from './models/Schemas.js';
+import { Curso, Docente, Aula, Carrera, Matricula } from './models/Schemas.js';
 import EnvironmentalMetric from './models/EnvironmentalMetric.js';
 import { environmentalTracker } from './middlewares/environmentalTracker.js';
 import { getEnvironmentalDashboard } from './controllers/environmentalController.js';
@@ -277,6 +277,36 @@ app.post('/api/matricula/asistente', autoMatricularAsistente);
 app.post('/api/matricula/dirigida', solicitarAsignaturaDirigida);
 app.post('/api/matricula/retiro', procesarRetiroCurso);
 app.post('/api/matricula/reserva', procesarReservaMatricula);
+
+// Obtener alumnos matriculados en una sección para el Teacher Dashboard
+app.get('/api/secciones/:id/estudiantes', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const matriculas = await Matricula.find({ secciones: id }).populate('estudiante');
+    const estudiantesEnrolled = matriculas.map(m => {
+      const est = m.estudiante;
+      if (!est) return null;
+      
+      let asistencia = 'Física';
+      if (m.asistenciaHibrida) {
+        if (typeof m.asistenciaHibrida.get === 'function') {
+          asistencia = m.asistenciaHibrida.get(id);
+        } else {
+          asistencia = m.asistenciaHibrida[id];
+        }
+      }
+      return {
+        _id: est._id,
+        nombre: est.nombre,
+        codigo: est.codigo,
+        asistencia: asistencia || 'Física'
+      };
+    }).filter(Boolean);
+    res.json(estudiantesEnrolled);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 app.post('/api/horarios/generar', generarHorario);
 

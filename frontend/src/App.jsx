@@ -1,7 +1,8 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { AdminDashboard } from './components/AdminDashboard';
 import { LoginPortal } from './components/LoginPortal';
-import AccessibilityToolbar from './components/AccessibilityToolbar';
+import { TeacherDashboard } from './components/TeacherDashboard';
+import { StudentDashboard } from './components/StudentDashboard';
 
 const ScheduleGrid = lazy(() => import('./components/ScheduleGrid'));
 
@@ -16,7 +17,7 @@ function App() {
   const [seccionesSeleccionadas, setSeccionesSeleccionadas] = useState([]);
   const [asistenciaHibrida, setAsistenciaHibrida] = useState({});
   const [semanaSimulada, setSemanaSimulada] = useState(1);
-  const [tipoPeriodo, setTipoPeriodo] = useState('Periodo I');
+  const [tipoPeriodo, setTipoPeriodo] = useState('Regular');
   const [justificacionCargaMinima, setJustificacionCargaMinima] = useState(false);
   
   const [docenteActivoId, setDocenteActivoId] = useState('');
@@ -27,24 +28,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [loadingAsistente, setLoadingAsistente] = useState(false);
   const [alerta, setAlerta] = useState(null);
-
-  // NUEVOS ESTADOS ASISTENTE ADAPTATIVO CON ENCUESTA
-  const [showEncuestaModal, setShowEncuestaModal] = useState(false);
-  const [encuestaTrabaja, setEncuestaTrabaja] = useState(false);
-  const [encuestaDias, setEncuestaDias] = useState([]);
-  const [encuestaFranjaInicio, setEncuestaFranjaInicio] = useState(0);
-  const [encuestaFranjaFin, setEncuestaFranjaFin] = useState(8);
-  const [encuestaTraslado, setEncuestaTraslado] = useState(30);
-  const [encuestaPreferencia, setEncuestaPreferencia] = useState('Ninguno');
-  
-  const [showCruceConfirm, setShowCruceConfirm] = useState(false);
-  const [cruceCursosList, setCruceCursosList] = useState([]);
-  const [tempSugeridas, setTempSugeridas] = useState([]);
-  const [tempFitness, setTempFitness] = useState(0);
-  const [satisfaccionAsistente, setSatisfaccionAsistente] = useState(null);
-  const [avisosAsistente, setAvisosAsistente] = useState([]);
-  const [tempSatisfaccion, setTempSatisfaccion] = useState(null);
-  const [tempAvisos, setTempAvisos] = useState([]);
 
   // Sincronizar cambios en la barra de navegación del navegador (Popstate)
   useEffect(() => {
@@ -250,36 +233,17 @@ function App() {
     }
   };
 
-  // Asistente Genético Alumno (Auto-Matrícula) - Iniciar encuesta
-  const handleAutoMatriculaAsistente = () => {
-    setAlerta(null);
-    setSatisfaccionAsistente(null);
-    setAvisosAsistente([]);
-    setTempSatisfaccion(null);
-    setTempAvisos([]);
-    setShowEncuestaModal(true); // Abrir modal de encuesta directamente
-  };
-
-  // Asistente Genético Alumno - Ejecución final tras completar encuesta
-  const ejecutarAsistenteConEncuesta = async () => {
-    setShowEncuestaModal(false);
-    
-    let cursoIds = [];
-    if (seccionesSeleccionadas.length > 0) {
-      cursoIds = [...new Set(seccionesSeleccionadas.map(id => {
-        const sec = seccionesDisponibles.find(s => s._id === id);
-        return sec?.curso?._id || sec?.curso;
-      }).filter(Boolean))];
-    } else {
-      // Si el alumno no pre-seleccionó asignaturas en la grilla, optimizar todas las de su semestre
-      const sectionsOfSemester = seccionesDisponibles.filter(s => s.curso?.semestre === estudianteActivo.semestre);
-      cursoIds = [...new Set(sectionsOfSemester.map(s => s.curso?._id || s.curso).filter(Boolean))];
-    }
-
-    if (cursoIds.length === 0) {
-      setAlerta({ tipo: 'warning', txt: "No se encontraron asignaturas disponibles para tu semestre actual." });
+  // Asistente Genético Alumno (Auto-Matrícula)
+  const handleAutoMatriculaAsistente = async () => {
+    if (seccionesSeleccionadas.length === 0) {
+      setAlerta({ tipo: 'warning', txt: "Por favor, selecciona primero algunos cursos para buscar sus secciones." });
       return;
     }
+    
+    const cursoIds = [...new Set(seccionesSeleccionadas.map(id => {
+      const sec = seccionesDisponibles.find(s => s._id === id);
+      return sec?.curso?._id || sec?.curso;
+    }).filter(Boolean))];
 
     setLoadingAsistente(true);
     setAlerta(null);
@@ -287,31 +251,21 @@ function App() {
       const res = await fetch('http://localhost:3000/api/matricula/asistente', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          estudianteId: estudianteActivo._id, 
-          cursoIds,
-          trabaja: encuestaTrabaja,
-          diasLaborales: encuestaDias,
-          franjaLaboralInicio: encuestaFranjaInicio,
-          franjaLaboralFin: encuestaFranjaFin,
-          tiempoTraslado: encuestaTraslado,
-          preferenciaTurno: encuestaPreferencia
-        })
+        body: JSON.stringify({ estudianteId: estudianteActivo._id, cursoIds })
       });
       const data = await res.json();
       if (data.success) {
-        if (data.cruceLaboral) {
-          // Si hay cruce laboral, guardar datos y abrir confirmación
-          setTempSugeridas(data.seccionesSugeridas);
-          setTempFitness(data.fitness);
-          setTempSatisfaccion(data.satisfaccion);
-          setTempAvisos(data.avisos);
-          setCruceCursosList(data.crucesLaborales);
-          setShowCruceConfirm(true);
-        } else {
-          // Aplicar directamente
-          aplicarSugeridas(data.seccionesSugeridas, data.fitness, data.satisfaccion, data.avisos);
-        }
+        const sugeridas = data.seccionesSugeridas.map(s => s._id);
+        setSeccionesSeleccionadas(sugeridas);
+        setAlerta({ tipo: 'success', txt: `¡Asistente completado! Se seleccionó la combinación de secciones sin cruces de horarios (Fitness: ${data.fitness?.toFixed(3)}).` });
+        
+        const hibridas = {};
+        data.seccionesSugeridas.forEach(s => {
+          if (s.curso?.modalidad === 'Híbrido' || s.curso?.modalidad === 'Hibrido') {
+            hibridas[s._id] = 'Física';
+          }
+        });
+        setAsistenciaHibrida(prev => ({ ...prev, ...hibridas }));
       } else {
         setAlerta({ tipo: 'error', txt: data.error });
       }
@@ -320,26 +274,6 @@ function App() {
     } finally {
       setLoadingAsistente(false);
     }
-  };
-
-  const aplicarSugeridas = (seccionesSugeridas, fitness, satisfaccion, avisos) => {
-    const sugeridasIds = seccionesSugeridas.map(s => s._id);
-    setSeccionesSeleccionadas(sugeridasIds);
-    const scoreVal = (satisfaccion !== undefined && satisfaccion !== null) ? satisfaccion : 100;
-    setSatisfaccionAsistente(scoreVal);
-    setAvisosAsistente(avisos || []);
-    setAlerta({ 
-      tipo: 'success', 
-      txt: `¡Asistente completado! Se seleccionó la mejor combinación de secciones según tus preferencias (Fitness: ${fitness?.toFixed(3)}) (${scoreVal}% de satisfacción).` 
-    });
-    
-    const hibridas = {};
-    seccionesSugeridas.forEach(s => {
-      if (s.curso?.modalidad === 'Híbrido' || s.curso?.modalidad === 'Hibrido') {
-        hibridas[s._id] = 'Física';
-      }
-    });
-    setAsistenciaHibrida(prev => ({ ...prev, ...hibridas }));
   };
 
   // Solicitar Asignatura Dirigida
@@ -496,16 +430,32 @@ function App() {
   // SEGURIDAD Y RUTEADOR CONDICIONAL
   // ==========================================
   
-  // Si está en /login y ya hay una sesión, redirigir
-  if (rutaActual === '/login' && rolActivo) {
-    navegarA(`/${rolActivo}`);
+  // 1. Redirecciones si no hay sesión activa y se intenta entrar a un dashboard protegido
+  if (rutaActual === '/admin' && rolActivo !== 'administrador') {
+    setTimeout(() => navegarA('/login/admin'), 50);
+    return null;
+  }
+  if (rutaActual === '/docente' && rolActivo !== 'docente') {
+    setTimeout(() => navegarA('/login/docente'), 50);
+    return null;
+  }
+  if (rutaActual === '/estudiante' && rolActivo !== 'estudiante') {
+    setTimeout(() => navegarA('/login/estudiante'), 50);
     return null;
   }
 
-  // Redirigir a login si intenta ingresar a una ruta protegida sin sesión
-  if (['/admin', '/docente', '/estudiante'].includes(rutaActual) && !rolActivo) {
-    setTimeout(() => navegarA('/login'), 50);
-    return null;
+  // 2. Redirecciones si ya hay una sesión activa y está en rutas de acceso público/login
+  if (rolActivo) {
+    if (['/login', '/login/admin', '/login/docente', '/login/estudiante', '/'].includes(rutaActual)) {
+      navegarA(`/${rolActivo}`);
+      return null;
+    }
+  } else {
+    // Redirigir a /login si accede a la raíz sin sesión
+    if (rutaActual === '/') {
+      setTimeout(() => navegarA('/login'), 50);
+      return null;
+    }
   }
 
   return (
@@ -544,7 +494,6 @@ function App() {
           
           <button
             onClick={handleLogout}
-            data-cy="logout-button"
             style={{
               padding: '10px 20px',
               borderRadius: '8px',
@@ -564,9 +513,7 @@ function App() {
 
       {/* ALERTAS GLOBALES */}
       {alerta && (
-        <div 
-          data-cy="alert-message"
-          style={{
+        <div style={{
           padding: '16px 24px',
           borderRadius: '12px',
           marginBottom: '25px',
@@ -596,11 +543,13 @@ function App() {
           ======================================================== */}
 
       {/* 1. PORTAL DE LOGIN */}
-      {(rutaActual === '/login' || rutaActual === '/' || !rolActivo) && (
+      {['/login', '/login/admin', '/login/docente', '/login/estudiante', '/'].includes(rutaActual) && !rolActivo && (
         <LoginPortal 
           estudiantesSimulados={estudiantesSimulados}
           docentesDisponibles={docentesDisponibles}
           onLogin={handleLogin}
+          rutaActual={rutaActual}
+          onNavegar={navegarA}
         />
       )}
 
@@ -617,790 +566,43 @@ function App() {
 
       {/* 3. VISTA DOCENTE */}
       {rutaActual === '/docente' && rolActivo === 'docente' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '30px' }}>
-          <div style={{ background: '#1e293b', borderRadius: '16px', padding: '24px', border: '1px solid #334155', alignSelf: 'start' }}>
-            <h3 style={{ margin: '0 0 15px 0', color: '#f8fafc', fontSize: '1.2rem' }}>Profesor Conectado</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <span style={{ fontSize: '0.95rem', fontWeight: 'bold', color: '#38bdf8' }}>{docenteActivoNombre}</span>
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.4' }}>
-                Vista exclusiva de docente. Aquí puede visualizar la distribución semanal de las clases de las secciones asignadas por el administrador en su agenda.
-              </p>
-            </div>
-          </div>
-
-          <div style={{ background: '#1e293b', borderRadius: '16px', padding: '24px', border: '1px solid #334155' }}>
-            <h3 style={{ margin: '0 0 15px 0', color: '#f8fafc', fontSize: '1.2rem' }}>Horario Docente Personalizado</h3>
-            <Suspense fallback={<div style={{ color: '#94a3b8', padding: '20px', textAlign: 'center' }}>Cargando calendario...</div>}>
-              <ScheduleGrid asignaciones={asignacionesDocenteActivo} />
-            </Suspense>
-          </div>
-        </div>
+        <TeacherDashboard 
+          docenteId={docenteActivoId}
+          docenteNombre={docenteActivoNombre}
+          seccionesDisponibles={seccionesDisponibles}
+          onLogout={handleLogout}
+        />
       )}
 
       {/* 4. VISTA ESTUDIANTE */}
       {rutaActual === '/estudiante' && rolActivo === 'estudiante' && estudianteActivo && (
-        <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '30px' }}>
-          
-          {/* EXPEDIENTE Y ESTADOS */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ background: '#1e293b', borderRadius: '16px', padding: '20px', border: '1px solid #334155' }}>
-              <h3 style={{ margin: '0 0 15px 0', color: '#f8fafc', fontSize: '1.1rem' }}>🎓 Expediente Alumno</h3>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.85rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#94a3b8' }}>Código:</span>
-                  <span style={{ fontWeight: 'bold', fontFamily: 'monospace' }}>{estudianteActivo.codigo}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#94a3b8' }}>Plan:</span>
-                  <span style={{
-                    fontWeight: 'bold',
-                    color: estudianteActivo.planVigente ? '#34d399' : '#f87171'
-                  }}>{estudianteActivo.planEstudios} {!estudianteActivo.planVigente && '(Inactivo)'}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#94a3b8' }}>Semestre Sugerido:</span>
-                  <span style={{ fontWeight: 'bold' }}>{estudianteActivo.semestre}° ciclo</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#94a3b8' }}>Cursos aprobados:</span>
-                  <span style={{ fontWeight: 'bold' }}>{estudianteActivo.cursosAprobados?.length || 0} asignaturas</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#94a3b8' }}>Asig. Dirigidas:</span>
-                  <span style={{ fontWeight: 'bold' }}>{estudianteActivo.cantidadDirigidos || 0} / 3</span>
-                </div>
-
-                <div style={{ borderTop: '1px solid #334155', paddingTop: '12px', marginTop: '5px' }}>
-                  <h4 style={{ margin: '0 0 8px 0', fontSize: '0.8rem', color: '#94a3b8' }}>Estado de Trámites:</h4>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                    <span style={{
-                      padding: '2px 8px',
-                      borderRadius: '4px',
-                      fontSize: '0.7rem',
-                      fontWeight: 'bold',
-                      backgroundColor: estudianteActivo.tieneDeudas ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)',
-                      color: estudianteActivo.tieneDeudas ? '#fca5a5' : '#a7f3d0'
-                    }}>
-                      {estudianteActivo.tieneDeudas ? 'DEUDAS PENDIENTES' : 'SIN DEUDAS'}
-                    </span>
-                    <span style={{
-                      padding: '2px 8px',
-                      borderRadius: '4px',
-                      fontSize: '0.7rem',
-                      fontWeight: 'bold',
-                      backgroundColor: estudianteActivo.tasaPagada ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-                      color: estudianteActivo.tasaPagada ? '#a7f3d0' : '#fca5a5'
-                    }}>
-                      {estudianteActivo.tasaPagada ? 'TASA COMPLETA' : 'TASA PENDIENTE'}
-                    </span>
-                    <span style={{
-                      padding: '2px 8px',
-                      borderRadius: '4px',
-                      fontSize: '0.7rem',
-                      fontWeight: 'bold',
-                      backgroundColor: estudianteActivo.seguroVigente ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-                      color: estudianteActivo.seguroVigente ? '#a7f3d0' : '#fca5a5'
-                    }}>
-                      {estudianteActivo.seguroVigente ? 'SEGURO ACTIVO' : 'SEGURO VENCIDO'}
-                    </span>
-                  </div>
-                </div>
-
-                {estudianteActivo.estadoMatricula !== 'Ninguno' && (
-                  <div style={{ 
-                    marginTop: '10px', 
-                    padding: '10px', 
-                    borderRadius: '8px', 
-                    backgroundColor: estudianteActivo.estadoMatricula === 'Matriculado' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-                    textAlign: 'center',
-                    border: '1px solid',
-                    borderColor: estudianteActivo.estadoMatricula === 'Matriculado' ? '#10b981' : '#f59e0b'
-                  }}>
-                    <strong style={{ 
-                      fontSize: '0.85rem',
-                      color: estudianteActivo.estadoMatricula === 'Matriculado' ? '#34d399' : '#fde68a'
-                    }}>
-                      ESTADO: {estudianteActivo.estadoMatricula.toUpperCase()}
-                    </strong>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* ESPACIO DE TRABAJO MATRÍCULA */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-            
-            {/* CONFIGURACIÓN SIMULADA */}
-            <div style={{ display: 'flex', gap: '20px', background: '#1e293b', padding: '16px 24px', borderRadius: '16px', border: '1px solid #334155', flexWrap: 'wrap', alignItems: 'center' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Periodo Académico</span>
-                <select 
-                  value={tipoPeriodo} 
-                  onChange={(e) => setTipoPeriodo(e.target.value)}
-                  style={{ padding: '6px 12px', borderRadius: '6px', backgroundColor: '#0f172a', border: '1px solid #334155', color: '#fff' }}
-                >
-                  <option value="Periodo I">Periodo I</option>
-                  <option value="Periodo II">Periodo II</option>
-                  <option value="Periodo 0">Periodo 0</option>
-                </select>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flexGrow: 1 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px' }}>
-                  <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Semana del Ciclo Simulada:</span>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#38bdf8' }}>Semana {semanaSimulada}</span>
-                </div>
-                <input 
-                  type="range" 
-                  min="1" 
-                  max="16" 
-                  value={semanaSimulada} 
-                  onChange={(e) => setSemanaSimulada(parseInt(e.target.value))}
-                  style={{ width: '220px', cursor: 'pointer' }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
-                <input 
-                  type="checkbox" 
-                  id="excCarga" 
-                  checked={justificacionCargaMinima}
-                  onChange={(e) => setJustificacionCargaMinima(e.target.checked)}
-                  style={{ transform: 'scale(1.2)', cursor: 'pointer' }}
-                />
-                <label htmlFor="excCarga" style={{ fontSize: '0.8rem', color: '#cbd5e1', cursor: 'pointer' }}>
-                  Justificar carga inferior a 12 créditos (Egresante)
-                </label>
-              </div>
-            </div>
-
-            {/* SELECCIÓN CURSOS */}
-            <div style={{ background: '#1e293b', borderRadius: '16px', padding: '24px', border: '1px solid #334155' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <div>
-                  <h3 style={{ margin: 0, color: '#f8fafc', fontSize: '1.25rem' }}>Selección de Asignaturas</h3>
-                  <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#94a3b8' }}>
-                    Selecciona las secciones de tu semestre. Puedes usar el Asistente Genético para compactar el horario.
-                  </p>
-                </div>
-                
-                <span 
-                  data-cy="credits-counter"
-                  style={{
-                  padding: '8px 16px',
-                  borderRadius: '8px',
-                  fontWeight: 'bold',
-                  fontSize: '1.05rem',
-                  backgroundColor: totalCreditosSeleccionados >= 12 && totalCreditosSeleccionados <= 25 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                  color: totalCreditosSeleccionados >= 12 && totalCreditosSeleccionados <= 25 ? '#34d399' : '#f87171',
-                  border: '1px solid',
-                  borderColor: totalCreditosSeleccionados >= 12 && totalCreditosSeleccionados <= 25 ? '#10b981' : '#ef4444'
-                }}>
-                  Créditos Seleccionados: {totalCreditosSeleccionados}
-                </span>
-              </div>
-
-              {/* PANEL DE SATISFACCIÓN Y ADVERTENCIAS DEL ASISTENTE GENÉTICO */}
-              {satisfaccionAsistente !== null && (
-                <div 
-                  data-cy="satisfaction-panel"
-                  style={{
-                    background: 'rgba(30, 41, 59, 0.4)',
-                    border: '1px solid #38bdf8',
-                    borderRadius: '12px',
-                    padding: '16px 20px',
-                    marginBottom: '20px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px'
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '1.2rem' }}>✨</span>
-                      <strong style={{ color: '#f8fafc', fontSize: '0.95rem' }}>Optimización del Asistente Genético</strong>
-                    </div>
-                    <span style={{
-                      padding: '4px 12px',
-                      borderRadius: '20px',
-                      fontSize: '0.8rem',
-                      fontWeight: 'bold',
-                      backgroundColor: satisfaccionAsistente >= 80 ? 'rgba(16, 185, 129, 0.15)' : satisfaccionAsistente >= 50 ? 'rgba(245, 158, 11, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                      color: satisfaccionAsistente >= 80 ? '#34d399' : satisfaccionAsistente >= 50 ? '#fde68a' : '#fca5a5',
-                      border: '1px solid',
-                      borderColor: satisfaccionAsistente >= 80 ? '#10b981' : satisfaccionAsistente >= 50 ? '#f59e0b' : '#ef4444'
-                    }}>
-                      Satisfacción: {satisfaccionAsistente}%
-                    </span>
-                  </div>
-                  {avisosAsistente.length > 0 ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}>
-                      {avisosAsistente.map((aviso, idx) => (
-                        <div key={idx} style={{ fontSize: '0.8rem', color: '#cbd5e1', display: 'flex', alignItems: 'flex-start', gap: '6px', lineHeight: '1.4' }}>
-                          <span style={{ color: '#f59e0b' }}>⚠️</span>
-                          <span>{aviso}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div style={{ fontSize: '0.8rem', color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span>✅</span> ¡Tu horario se adapta al 100% de tus preferencias! No se detectaron cruces ni desvíos.
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* LISTA DE CURSOS Y SECCIONES */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '420px', overflowY: 'auto', paddingRight: '5px', marginBottom: '25px' }}>
-                {seccionesDisponibles
-                  .filter(s => s.curso?.semestre === estudianteActivo.semestre)
-                  .map(sec => {
-                    const isSelected = seccionesSeleccionadas.includes(sec._id);
-                    const esHibrido = sec.curso?.modalidad === 'Híbrido' || sec.curso?.modalidad === 'Hibrido';
-                    
-                    return (
-                      <div key={sec._id} style={{
-                        padding: '16px',
-                        borderRadius: '10px',
-                        border: '1px solid',
-                        backgroundColor: isSelected ? 'rgba(56, 189, 248, 0.05)' : '#0f172a',
-                        borderColor: isSelected ? '#38bdf8' : '#334155',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '10px',
-                        transition: '0.2s'
-                      }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <input 
-                              type="checkbox" 
-                              checked={isSelected}
-                              onChange={() => handleToggleSeccion(sec._id)}
-                              disabled={estudianteActivo.estadoMatricula === 'Matriculado'}
-                              data-cy={`section-checkbox-${sec.codigo}`}
-                              style={{ transform: 'scale(1.3)', cursor: 'pointer' }}
-                            />
-                            <div>
-                              <strong style={{ color: '#f8fafc', fontSize: '0.95rem' }}>{sec.curso?.nombre} ({sec.curso?.creditos} CR)</strong>
-                              <div style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'flex', gap: '10px', marginTop: '3px' }}>
-                                <span>Código: <code style={{ fontSize: '0.7rem' }}>{sec.codigo}</code></span>
-                                <span>Aula: {sec.aula?.nombre}</span>
-                                <span>Docente: {sec.docente?.nombre}</span>
-                                <span style={{ color: sec.vacantesDisponibles > 5 ? '#34d399' : '#f87171', fontWeight: 'bold' }}>
-                                  Vacantes: {sec.vacantesDisponibles} / {sec.vacantesTotales}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div style={{ display: 'flex', gap: '6px' }}>
-                            <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', backgroundColor: '#1e293b', color: '#cbd5e1', border: '1px solid #334155' }}>
-                              Ciclo {sec.curso?.semestre}
-                            </span>
-                            <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', backgroundColor: esHibrido ? 'rgba(168, 85, 247, 0.15)' : 'rgba(56, 189, 248, 0.15)', color: esHibrido ? '#c084fc' : '#38bdf8' }}>
-                              {sec.curso?.modalidad}
-                            </span>
-                          </div>
-                        </div>
-
-                        {esHibrido && isSelected && (
-                          <div style={{ marginLeft: '28px', padding: '8px 12px', borderRadius: '6px', backgroundColor: '#1e293b', display: 'flex', alignItems: 'center', gap: '15px', border: '1px solid #334155' }}>
-                            <span style={{ fontSize: '0.75rem', color: '#cbd5e1', fontWeight: '500' }}>Asistencia:</span>
-                            <label style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-                              <input 
-                                type="radio" 
-                                name={`asistencia-${sec._id}`}
-                                value="Física"
-                                checked={asistenciaHibrida[sec._id] === 'Física'}
-                                onChange={() => setAsistenciaHibrida(prev => ({ ...prev, [sec._id]: 'Física' }))}
-                                disabled={estudianteActivo.estadoMatricula === 'Matriculado'}
-                              />
-                              🏛️ Física
-                            </label>
-                            <label style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-                              <input 
-                                type="radio" 
-                                name={`asistencia-${sec._id}`}
-                                value="Remota"
-                                checked={asistenciaHibrida[sec._id] === 'Remota'}
-                                onChange={() => setAsistenciaHibrida(prev => ({ ...prev, [sec._id]: 'Remota' }))}
-                                disabled={estudianteActivo.estadoMatricula === 'Matriculado'}
-                              />
-                              💻 Remota
-                            </label>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-              </div>
-
-              <div style={{ display: 'flex', gap: '15px' }}>
-                <button 
-                  onClick={handleMatricularse}
-                  disabled={loading || estudianteActivo.estadoMatricula === 'Matriculado'}
-                  data-cy="confirm-matricula-button"
-                  style={{
-                    flexGrow: 1,
-                    padding: '14px 20px',
-                    borderRadius: '10px',
-                    border: 'none',
-                    fontWeight: 'bold',
-                    backgroundColor: '#10b981',
-                    color: '#fff',
-                    cursor: 'pointer',
-                    opacity: (loading || estudianteActivo.estadoMatricula === 'Matriculado') ? 0.5 : 1,
-                    fontSize: '0.95rem'
-                  }}
-                >
-                  {loading ? 'Procesando...' : 'Confirmar Matrícula'}
-                </button>
-
-                <button 
-                  onClick={handleAutoMatriculaAsistente}
-                  disabled={loadingAsistente || estudianteActivo.estadoMatricula === 'Matriculado'}
-                  data-cy="genetic-assistant-button"
-                  style={{
-                    padding: '14px 24px',
-                    borderRadius: '10px',
-                    border: '1px solid #334155',
-                    fontWeight: 'bold',
-                    backgroundColor: '#1e293b',
-                    color: '#38bdf8',
-                    cursor: 'pointer',
-                    opacity: (loadingAsistente || estudianteActivo.estadoMatricula === 'Matriculado') ? 0.5 : 1,
-                    fontSize: '0.95rem'
-                  }}
-                >
-                  {loadingAsistente ? 'Procesando...' : '✨ Asistente Genético'}
-                </button>
-              </div>
-            </div>
-
-            {/* TRÁMITES ACADÉMICOS COMPLEMENTARIOS */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
-              
-              {/* CURSO DIRIGIDO */}
-              <div style={{ background: '#1e293b', borderRadius: '16px', padding: '20px', border: '1px solid #334155' }}>
-                <h3 style={{ margin: '0 0 10px 0', color: '#f8fafc', fontSize: '1.1rem' }}>📝 Asignaturas Dirigidas</h3>
-                <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '15px' }}>
-                  Solicita llevar una asignatura de forma dirigida. Máximo 3 en tu permanencia.
-                </p>
-
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <select 
-                    id="dirigidaSelect"
-                    style={{
-                      flexGrow: 1,
-                      padding: '8px 12px',
-                      borderRadius: '8px',
-                      backgroundColor: '#0f172a',
-                      color: '#cbd5e1',
-                      border: '1px solid #334155',
-                      fontSize: '0.85rem'
-                    }}
-                  >
-                    {seccionesDisponibles
-                      .filter(s => s.curso?.semestre === estudianteActivo.semestre)
-                      .filter((val, idx, arr) => arr.findIndex(t => t.curso?._id === val.curso?._id) === idx)
-                      .map(sec => (
-                        <option key={sec._id} value={sec.curso?._id}>{sec.curso?.nombre}</option>
-                      ))}
-                  </select>
-                  <button 
-                    onClick={() => {
-                      const sel = document.getElementById('dirigidaSelect');
-                      if (sel) handleSolicitarDirigida(sel.value);
-                    }}
-                    style={{
-                      padding: '8px 16px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      backgroundColor: '#8b5cf6',
-                      color: '#fff',
-                      fontWeight: 'bold',
-                      fontSize: '0.85rem',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Solicitar
-                  </button>
-                </div>
-              </div>
-
-              {/* RESERVA Y RETIRO */}
-              <div style={{ background: '#1e293b', borderRadius: '16px', padding: '20px', border: '1px solid #334155', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div>
-                  <h3 style={{ margin: '0 0 10px 0', color: '#f8fafc', fontSize: '1.1rem' }}>📅 Reserva de Matrícula</h3>
-                  <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '15px' }}>
-                    Permitido reservar la matrícula del ciclo completo hasta la **Semana 2**.
-                  </p>
-                </div>
-                <button 
-                  onClick={handleReservarMatricula}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid #f59e0b',
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                    color: '#f59e0b',
-                    fontWeight: 'bold',
-                    fontSize: '0.85rem',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Solicitar Reserva
-                </button>
-              </div>
-
-            </div>
-
-            {/* SECCIÓN RETIROS */}
-            {estudianteActivo.estadoMatricula === 'Matriculado' && (
-              <div style={{ background: '#1e293b', borderRadius: '16px', padding: '24px', border: '1px solid #334155' }}>
-                <h3 style={{ margin: '0 0 10px 0', color: '#f8fafc', fontSize: '1.1rem' }}>🗑️ Retiro de Asignaturas</h3>
-                <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '15px' }}>
-                  Retirar asignaturas está permitido hasta la **Semana 14** (presencial) y **Semana 7** (semipresencial/distancia).
-                </p>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {seccionesDisponibles
-                    .filter(s => seccionesSeleccionadas.includes(s._id))
-                    .map(sec => (
-                      <div key={sec._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0f172a', padding: '10px 15px', borderRadius: '8px', border: '1px solid #334155' }}>
-                        <span style={{ fontSize: '0.85rem', color: '#f8fafc', fontWeight: '500' }}>{sec.curso?.nombre} ({sec.curso?.modalidad})</span>
-                        <button
-                          onClick={() => handleRetirarAsignatura(sec._id)}
-                          style={{
-                            padding: '4px 12px',
-                            borderRadius: '6px',
-                            border: 'none',
-                            backgroundColor: '#7f1d1d',
-                            color: '#f87171',
-                            fontWeight: 'bold',
-                            fontSize: '0.75rem',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Retirar
-                        </button>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            )}
-
-            {/* HORARIO GENERADO */}
-            {seccionesSeleccionadas.length > 0 && (
-              <div style={{ background: '#1e293b', borderRadius: '16px', padding: '24px', border: '1px solid #334155' }}>
-                <h3 style={{ margin: '0 0 15px 0', color: '#f8fafc', fontSize: '1.2rem' }}>🕒 Vista del Horario Académico</h3>
-                <Suspense fallback={<div style={{ color: '#94a3b8', padding: '20px', textAlign: 'center' }}>Cargando grilla de horarios...</div>}>
-                  <ScheduleGrid asignaciones={asignacionesEstudiante} />
-                </Suspense>
-              </div>
-            )}
-
-          </div>
-
-        </div>
+        <StudentDashboard 
+          estudianteActivo={estudianteActivo}
+          seccionesDisponibles={seccionesDisponibles}
+          seccionesSeleccionadas={seccionesSeleccionadas}
+          asistenciaHibrida={asistenciaHibrida}
+          semanaSimulada={semanaSimulada}
+          tipoPeriodo={tipoPeriodo}
+          justificacionCargaMinima={justificacionCargaMinima}
+          loading={loading}
+          loadingAsistente={loadingAsistente}
+          onToggleSeccion={handleToggleSeccion}
+          onMatricularse={handleMatricularse}
+          onAutoMatriculaAsistente={handleAutoMatriculaAsistente}
+          onSolicitarDirigida={handleSolicitarDirigida}
+          onReservarMatricula={handleReservarMatricula}
+          onRetirarAsignatura={handleRetirarAsignatura}
+          onSetAsistenciaHibrida={setAsistenciaHibrida}
+          onSetTipoPeriodo={setTipoPeriodo}
+          onSetSemanaSimulada={setSemanaSimulada}
+          onSetJustificacionCargaMinima={setJustificacionCargaMinima}
+        />
       )}
 
       {/* FOOTER */}
       <footer style={{ marginTop: '50px', borderTop: '1px solid #334155', paddingTop: '20px', textAlign: 'center', fontSize: '0.8rem', color: '#64748b' }}>
         <p>Planner-UC. Optimización del software y eficiencia de recursos académicos - 2026</p>
       </footer>
-
-      {/* TOOLBAR DE ACCESIBILIDAD WCAG */}
-      <AccessibilityToolbar />
-
-      {/* MODAL DE ENCUESTA */}
-      {showEncuestaModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: 'rgba(15, 23, 42, 0.85)',
-          backdropFilter: 'blur(8px)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 20000
-        }}>
-          <div style={{
-            backgroundColor: '#1e293b',
-            border: '1px solid #334155',
-            borderRadius: '16px',
-            width: '450px',
-            maxWidth: '95%',
-            padding: '30px',
-            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
-            boxSizing: 'border-box',
-            textAlign: 'left'
-          }}>
-            <h2 style={{ margin: '0 0 20px 0', color: '#f8fafc', fontSize: '1.4rem', borderBottom: '1px solid #334155', paddingBottom: '10px' }}>
-              ✨ Asistente Adaptativo
-            </h2>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {/* Pregunta Trabajo */}
-              <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '8px', fontWeight: 'bold' }}>
-                  ¿Trabajas actualmente?
-                </label>
-                <select
-                  value={encuestaTrabaja ? 'si' : 'no'}
-                  onChange={(e) => setEncuestaTrabaja(e.target.value === 'si')}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    backgroundColor: '#0f172a',
-                    color: '#cbd5e1',
-                    border: '1px solid #334155',
-                    fontSize: '0.9rem'
-                  }}
-                >
-                  <option value="no">No trabajo</option>
-                  <option value="si">Sí trabajo</option>
-                </select>
-              </div>
-
-              {/* Sección Trabajo Config */}
-              {encuestaTrabaja && (
-                <div style={{ padding: '15px', backgroundColor: 'rgba(15, 23, 42, 0.5)', borderRadius: '8px', border: '1px solid #334155', display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.8rem', color: '#94a3b8', marginBottom: '8px', fontWeight: 'bold' }}>
-                      Días laborales:
-                    </label>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                      {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'].map((dia, idx) => (
-                        <label key={dia} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#cbd5e1', cursor: 'pointer' }}>
-                          <input
-                            type="checkbox"
-                            checked={encuestaDias.includes(idx)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setEncuestaDias([...encuestaDias, idx]);
-                              } else {
-                                setEncuestaDias(encuestaDias.filter(d => d !== idx));
-                              }
-                            }}
-                            style={{ cursor: 'pointer' }}
-                          />
-                          {dia}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                    <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', color: '#94a3b8', marginBottom: '6px' }}>Franja Inicio:</label>
-                      <select
-                        value={encuestaFranjaInicio}
-                        onChange={(e) => setEncuestaFranjaInicio(Number(e.target.value))}
-                        style={{ width: '100%', padding: '6px', borderRadius: '6px', backgroundColor: '#0f172a', color: '#cbd5e1', border: '1px solid #334155', fontSize: '0.8rem' }}
-                      >
-                        {Array.from({ length: 9 }).map((_, i) => (
-                          <option key={i} value={i}>Bloque {i} ({(7 + i * 1.5).toString().split('.')[0].padStart(2, '0')}:00)</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', color: '#94a3b8', marginBottom: '6px' }}>Franja Fin:</label>
-                      <select
-                        value={encuestaFranjaFin}
-                        onChange={(e) => setEncuestaFranjaFin(Number(e.target.value))}
-                        style={{ width: '100%', padding: '6px', borderRadius: '6px', backgroundColor: '#0f172a', color: '#cbd5e1', border: '1px solid #334155', fontSize: '0.8rem' }}
-                      >
-                        {Array.from({ length: 9 }).map((_, i) => (
-                          <option key={i} value={i}>Bloque {i} ({(8 + i * 1.5).toString().split('.')[0].padStart(2, '0')}:30)</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Tiempo de Traslado */}
-              <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '8px', fontWeight: 'bold' }}>
-                  Tiempo de traslado a la U (minutos):
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  max="240"
-                  value={encuestaTraslado}
-                  onChange={(e) => setEncuestaTraslado(Number(e.target.value))}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    backgroundColor: '#0f172a',
-                    color: '#cbd5e1',
-                    border: '1px solid #334155',
-                    fontSize: '0.9rem',
-                    boxSizing: 'border-box'
-                  }}
-                />
-              </div>
-
-              {/* Preferencia Turno */}
-              <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '8px', fontWeight: 'bold' }}>
-                  Preferencia de Turno de Estudio:
-                </label>
-                <select
-                  value={encuestaPreferencia}
-                  onChange={(e) => setEncuestaPreferencia(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    backgroundColor: '#0f172a',
-                    color: '#cbd5e1',
-                    border: '1px solid #334155',
-                    fontSize: '0.9rem'
-                  }}
-                >
-                  <option value="Ninguno">Sin Preferencia</option>
-                  <option value="Mañana">Turno Mañana (07am - 01pm)</option>
-                  <option value="Tarde">Turno Tarde (01pm - 06pm)</option>
-                  <option value="Noche">Turno Noche (06pm - 10pm)</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Acciones */}
-            <div style={{ display: 'flex', gap: '12px', marginTop: '30px', justifyContent: 'flex-end' }}>
-              <button
-                onClick={() => setShowEncuestaModal(false)}
-                data-cy="cancel-survey-button"
-                style={{
-                  padding: '10px 20px',
-                  borderRadius: '8px',
-                  border: '1px solid #334155',
-                  backgroundColor: 'transparent',
-                  color: '#94a3b8',
-                  fontSize: '0.9rem',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={ejecutarAsistenteConEncuesta}
-                data-cy="submit-survey-button"
-                style={{
-                  padding: '10px 20px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  backgroundColor: '#38bdf8',
-                  color: '#0f172a',
-                  fontSize: '0.9rem',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                Optimizar Horario
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* MODAL CONFIRMACION CRUCE LABORAL */}
-      {showCruceConfirm && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: 'rgba(15, 23, 42, 0.85)',
-          backdropFilter: 'blur(8px)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 20001
-        }}>
-          <div style={{
-            backgroundColor: '#1e293b',
-            border: '2px solid #f5b041',
-            borderRadius: '16px',
-            width: '450px',
-            maxWidth: '95%',
-            padding: '30px',
-            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
-            boxSizing: 'border-box',
-            textAlign: 'center'
-          }}>
-            <div style={{ fontSize: '3rem', marginBottom: '15px' }}>⚠️</div>
-            <h2 style={{ margin: '0 0 15px 0', color: '#f5b041', fontSize: '1.3rem' }}>
-              Advertencia: Cruce con Horario Laboral
-            </h2>
-            <p style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: '1.5', margin: '0 0 20px 0', textAlign: 'left' }}>
-              Se encontró una combinación sugerida para tu horario, pero existe un cruce entre tu horario laboral y la sección de las siguientes asignaturas:
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', margin: '0 0 25px 0' }}>
-              {cruceCursosList.map((curso, idx) => (
-                <div key={idx} style={{ padding: '8px 12px', backgroundColor: 'rgba(245, 176, 65, 0.15)', border: '1px solid #f5b041', borderRadius: '6px', fontSize: '0.85rem', color: '#f9e79f', fontWeight: 'bold' }}>
-                  {curso}
-                </div>
-              ))}
-            </div>
-            <p style={{ fontSize: '0.85rem', color: '#cbd5e1', margin: '0 0 25px 0' }}>
-              ¿Deseas aceptar este cruce laboral de forma excepcional y aplicar esta sugerencia al calendario de matrícula?
-            </p>
-
-            {/* Acciones */}
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-              <button
-                onClick={() => setShowCruceConfirm(false)}
-                style={{
-                  padding: '10px 20px',
-                  borderRadius: '8px',
-                  border: '1px solid #334155',
-                  backgroundColor: 'transparent',
-                  color: '#cbd5e1',
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                Rechazar Horario
-              </button>
-              <button
-                onClick={() => {
-                  setShowCruceConfirm(false);
-                  aplicarSugeridas(tempSugeridas, tempFitness, tempSatisfaccion, tempAvisos);
-                }}
-                style={{
-                  padding: '10px 20px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  backgroundColor: '#f5b041',
-                  color: '#1e293b',
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                Aceptar y Continuar
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
 
     </div>
   );
