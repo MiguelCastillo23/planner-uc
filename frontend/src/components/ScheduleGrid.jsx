@@ -14,47 +14,54 @@ const FRANJAS = [
   { id: 8, label: "08:28 PM - 09:58 PM" }
 ];
 
-const ScheduleGrid = ({ asignaciones = [] }) => {
+const ScheduleGrid = ({ asignaciones = [], isDark = true }) => {
   const styles = {
-    container: { overflowX: 'auto', padding: '15px', backgroundColor: '#fff' },
+    container: { 
+      overflowX: 'auto', 
+      padding: '15px', 
+      backgroundColor: isDark ? '#1e293b' : '#fff',
+      borderRadius: '12px'
+    },
     grid: {
       display: 'grid',
       gridTemplateColumns: '160px repeat(6, 1fr)',
-      border: '1px solid #ced4da',
+      border: isDark ? '1px solid #334155' : '1px solid #ced4da',
       minWidth: '1100px',
-      backgroundColor: '#f8f9fa'
+      backgroundColor: isDark ? '#0f172a' : '#f8f9fa',
+      borderRadius: '8px',
+      overflow: 'hidden'
     },
     header: {
-      backgroundColor: '#212529',
-      color: '#fff',
+      backgroundColor: isDark ? '#1e293b' : '#212529',
+      color: isDark ? '#f8fafc' : '#fff',
       padding: '12px',
       textAlign: 'center',
       fontWeight: 'bold',
       fontSize: '0.9rem',
-      border: '1px solid #343a40'
+      border: isDark ? '1px solid #334155' : '1px solid #343a40'
     },
     hourCell: {
       padding: '10px',
       fontSize: '0.75rem',
-      backgroundColor: '#e9ecef',
-      borderBottom: '1px solid #dee2e6',
-      borderRight: '2px solid #adb5bd',
+      backgroundColor: isDark ? '#1e293b' : '#e9ecef',
+      borderBottom: isDark ? '1px solid #334155' : '1px solid #dee2e6',
+      borderRight: isDark ? '2px solid #334155' : '2px solid #adb5bd',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       fontWeight: '600',
-      color: '#495057'
+      color: isDark ? '#cbd5e1' : '#495057'
     },
     courseCell: {
-      borderBottom: '1px solid #dee2e6',
-      borderRight: '1px solid #dee2e6',
+      borderBottom: isDark ? '1px solid #334155' : '1px solid #dee2e6',
+      borderRight: isDark ? '1px solid #334155' : '1px solid #dee2e6',
       minHeight: '120px',
       padding: '6px',
-      backgroundColor: '#fff',
+      backgroundColor: isDark ? '#0f172a' : '#fff',
       position: 'relative'
     },
     card: {
-      borderRadius: '4px',
+      borderRadius: '6px',
       padding: '10px',
       fontSize: '0.75rem',
       height: '100%',
@@ -66,11 +73,11 @@ const ScheduleGrid = ({ asignaciones = [] }) => {
     tag: {
       fontSize: '0.65rem',
       fontWeight: '900',
-      color: '#0d47a1',
+      color: isDark ? '#38bdf8' : '#0d47a1',
       marginBottom: '4px'
     },
     aula: {
-      color: '#c62828',
+      color: isDark ? '#f87171' : '#c62828',
       fontWeight: 'bold',
       marginTop: '4px',
       fontSize: '0.7rem'
@@ -82,7 +89,7 @@ const ScheduleGrid = ({ asignaciones = [] }) => {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} data-cy="schedule-grid">
       <div style={styles.grid}>
         {/* Cabecera de Días */}
         <div style={styles.header}>FRANJA HORARIA</div>
@@ -111,31 +118,33 @@ const ScheduleGrid = ({ asignaciones = [] }) => {
                   {curso && (
                     <div style={{
                       ...styles.card,
-                      backgroundColor: esContinuacion ? '#e3f2fd' : '#e3f2fd',
-                      borderLeft: '4px solid #1976d2',
-                      borderTopLeftRadius: esContinuacion ? '0' : '4px',
-                      borderTopRightRadius: esContinuacion ? '0' : '4px',
-                      boxShadow: esContinuacion ? 'none' : '0 2px 4px rgba(0,0,0,0.1)'
+                      backgroundColor: isDark ? 'rgba(56, 189, 248, 0.08)' : '#e3f2fd',
+                      borderLeft: isDark ? '4px solid #38bdf8' : '4px solid #1976d2',
+                      borderTopLeftRadius: esContinuacion ? '0' : '6px',
+                      borderTopRightRadius: esContinuacion ? '0' : '6px',
+                      boxShadow: esContinuacion ? 'none' : '0 2px 4px rgba(0,0,0,0.15)',
+                      border: isDark ? '1px solid rgba(56, 189, 248, 0.2)' : 'none',
+                      borderLeftWidth: '4px'
                     }}>
                       {!esContinuacion ? (
                         <>
                           <span style={styles.tag}>NRC: {curso.codigo}</span>
-                          <div style={{ fontWeight: '800', color: '#1565c0', lineHeight: '1.2' }}>
+                          <div style={{ fontWeight: '800', color: isDark ? '#e2e8f0' : '#1565c0', lineHeight: '1.2' }}>
                             {curso.nombre.toUpperCase()}
                           </div>
                           <div style={styles.aula}>AULA: {curso.aula}</div>
-                          <div style={{ fontSize: '0.65rem', marginTop: '6px', color: '#555', borderTop: '1px solid #bbdefb', paddingTop: '4px' }}>
+                          <div style={{ fontSize: '0.65rem', marginTop: '6px', color: isDark ? '#94a3b8' : '#555', borderTop: isDark ? '1px solid rgba(56, 189, 248, 0.15)' : '1px solid #bbdefb', paddingTop: '4px' }}>
                             {curso.docente}
                           </div>
                         </>
                       ) : (
                         <>
                           <span style={styles.tag}>NRC: {curso.codigo}</span>
-                          <div style={{ fontWeight: '800', color: '#1565c0', lineHeight: '1.2' }}>
+                          <div style={{ fontWeight: '800', color: isDark ? '#e2e8f0' : '#1565c0', lineHeight: '1.2' }}>
                             {curso.nombre.toUpperCase()}
                           </div>
                           <div style={styles.aula}>AULA: {curso.aula}</div>
-                          <div style={{ fontSize: '0.65rem', marginTop: '6px', color: '#555', borderTop: '1px solid #bbdefb', paddingTop: '4px' }}>
+                          <div style={{ fontSize: '0.65rem', marginTop: '6px', color: isDark ? '#94a3b8' : '#555', borderTop: isDark ? '1px solid rgba(56, 189, 248, 0.15)' : '1px solid #bbdefb', paddingTop: '4px' }}>
                             {curso.docente}
                           </div>
                         </>

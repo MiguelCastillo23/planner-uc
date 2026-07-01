@@ -1,0 +1,60 @@
+name: SonarQube Quality Scan
+
+on:
+  push:
+    branches:
+      - tests
+      - master
+  pull_request:
+    branches:
+      - tests
+      - master
+
+jobs:
+  sonarcloud:
+    name: SonarQube Quality Gate Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Desactivar shallow clone para un análisis completo de histórico en Sonar
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      # 1. Configurar y Ejecutar Pruebas de Backend
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          npm ci
+
+      - name: Run Backend Tests with Coverage
+        run: |
+          cd backend
+          npm run test:coverage
+        env:
+          MONGO_URI: mongodb://localhost:27017/test-db # URI temporal para entorno CI
+
+      # 2. Configurar y Ejecutar Pruebas de Frontend
+      - name: Install Frontend Dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run Frontend Tests with Coverage
+        run: |
+          cd frontend
+          npm run test:coverage
+
+      # 3. Escaneo de Calidad mediante SonarQube
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v3
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
