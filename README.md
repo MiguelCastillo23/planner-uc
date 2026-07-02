@@ -3,6 +3,7 @@
 Este proyecto corresponde al **Proyecto de Fin de Asignatura (PFA)** del curso *Taller de Proyectos 2* de la Universidad Continental. El sistema aborda un problema complejo de ingeniería: la generación de horarios en entornos de currículo flexible, caracterizado por una alta combinatoria y múltiples restricciones.
 
 ---
+<img width="896" height="428" alt="WhatsApp Image 2026-07-02 at 18 51 47" src="https://github.com/user-attachments/assets/83e9c687-0a03-470a-941f-175e6f0f6cfb" />
 
 ## 👥 Integrantes del Equipo
 - **Miguel Angel Castillo Rojas**
@@ -148,7 +149,7 @@ npm test
 
 ## 🎥 Video Explicativo
 Demostración funcional, técnica y de flujo del Producto Mínimo Viable:
-*   [🎬 Ver Video ](https://youtube.com)
+*   [🎬 Ver Video ](https://youtu.be/HuzznnMHkPM)
 
 ---
 
