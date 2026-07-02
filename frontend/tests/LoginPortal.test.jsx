@@ -22,19 +22,18 @@ describe('LoginPortal Component', () => {
       />
     );
 
-    expect(screen.getByText(/Ingreso/)).toBeInTheDocument();
-    expect(screen.getByText(/Acceso Administrador/)).toBeInTheDocument();
-    expect(screen.getByText(/Acceso Estudiante/)).toBeInTheDocument();
-    expect(screen.getByText(/Acceso Docente/)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Administrador' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Profesor / Docente' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Estudiante de Pregrado' })).toBeInTheDocument();
   });
 
   it('shows error message on invalid admin login', () => {
     const handleLogin = vi.fn();
-    render(<LoginPortal onLogin={handleLogin} />);
+    const { container } = render(<LoginPortal onLogin={handleLogin} />);
 
-    const userInput = screen.getByPlaceholderText(/Usuario/);
-    const passInput = screen.getByPlaceholderText(/Contraseña/);
-    const submitBtn = screen.getByRole('button', { name: /Iniciar Sesión/ });
+    const userInput = container.querySelector('[data-cy="admin-user-input"]');
+    const passInput = container.querySelector('[data-cy="admin-pass-input"]');
+    const submitBtn = container.querySelector('[data-cy="admin-login-button"]');
 
     fireEvent.change(userInput, { target: { value: 'wrong_user' } });
     fireEvent.change(passInput, { target: { value: 'wrong_pass' } });
@@ -46,11 +45,11 @@ describe('LoginPortal Component', () => {
 
   it('triggers onLogin callback with administrador role on successful admin login', () => {
     const handleLogin = vi.fn();
-    render(<LoginPortal onLogin={handleLogin} />);
+    const { container } = render(<LoginPortal onLogin={handleLogin} />);
 
-    const userInput = screen.getByPlaceholderText(/Usuario/);
-    const passInput = screen.getByPlaceholderText(/Contraseña/);
-    const submitBtn = screen.getByRole('button', { name: /Iniciar Sesión/ });
+    const userInput = container.querySelector('[data-cy="admin-user-input"]');
+    const passInput = container.querySelector('[data-cy="admin-pass-input"]');
+    const submitBtn = container.querySelector('[data-cy="admin-login-button"]');
 
     fireEvent.change(userInput, { target: { value: 'admin' } });
     fireEvent.change(passInput, { target: { value: 'admin' } });
@@ -61,17 +60,17 @@ describe('LoginPortal Component', () => {
 
   it('triggers onLogin callback with student data when student is selected', () => {
     const handleLogin = vi.fn();
-    render(
+    const { container } = render(
       <LoginPortal 
         estudiantesSimulados={mockStudents} 
         onLogin={handleLogin} 
       />
     );
 
-    const studentSelect = screen.getAllByRole('combobox')[0]; 
+    const studentSelect = container.querySelector('[data-cy="student-select"]'); 
     fireEvent.change(studentSelect, { target: { value: 'e1' } });
 
-    const studentBtn = screen.getAllByRole('button', { name: /Ingresar/ })[0];
+    const studentBtn = container.querySelector('[data-cy="student-login-button"]');
     fireEvent.click(studentBtn);
 
     expect(handleLogin).toHaveBeenCalledWith('estudiante', mockStudents[0]);
@@ -79,17 +78,17 @@ describe('LoginPortal Component', () => {
 
   it('triggers onLogin callback with teacher data when teacher is selected', () => {
     const handleLogin = vi.fn();
-    render(
+    const { container } = render(
       <LoginPortal 
         docentesDisponibles={mockTeachers} 
         onLogin={handleLogin} 
       />
     );
 
-    const teacherSelect = screen.getAllByRole('combobox')[1];
+    const teacherSelect = container.querySelector('[data-cy="docente-select"]');
     fireEvent.change(teacherSelect, { target: { value: 'd1' } });
 
-    const teacherBtn = screen.getAllByRole('button', { name: /Ingresar/ })[1];
+    const teacherBtn = container.querySelector('[data-cy="docente-login-button"]');
     fireEvent.click(teacherBtn);
 
     expect(handleLogin).toHaveBeenCalledWith('docente', mockTeachers[0]);

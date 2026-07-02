@@ -16,7 +16,7 @@ describe('Pruebas de Integración Frontend (RTL + MSW)', () => {
   // Escenario 1: Peticiones válidas
   // Flujo completo de LoginPortal -> selección de rol -> visualización de dashboard con KPI calculados.
   it('1. Peticiones válidas: realiza el flujo completo de login administrador y visualiza KPI calculados', async () => {
-    render(<App />);
+    const { container } = render(<App />);
 
     // Esperar a que se cargue la vista de LoginPortal y los datos iniciales
     await screen.findByText('Estudiante Test');
@@ -24,12 +24,12 @@ describe('Pruebas de Integración Frontend (RTL + MSW)', () => {
       expect(window.location.pathname).toBe('/login');
     });
 
-    expect(screen.getByText(/Acceso Administrador/)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Administrador' })).toBeInTheDocument();
 
     // Rellenar credenciales de administrador
-    const userInput = screen.getByPlaceholderText(/Usuario/);
-    const passInput = screen.getByPlaceholderText(/Contraseña/);
-    const submitBtn = screen.getByRole('button', { name: /Iniciar Sesión/ });
+    const userInput = container.querySelector('[data-cy="admin-user-input"]');
+    const passInput = container.querySelector('[data-cy="admin-pass-input"]');
+    const submitBtn = container.querySelector('[data-cy="admin-login-button"]');
 
     fireEvent.change(userInput, { target: { value: 'admin' } });
     fireEvent.change(passInput, { target: { value: 'admin' } });
@@ -109,24 +109,24 @@ describe('Pruebas de Integración Frontend (RTL + MSW)', () => {
       })
     );
 
-    render(<App />);
+    const { container } = render(<App />);
 
     // Esperar y seleccionar estudiante deudor
     await screen.findByText('Estudiante Deudor');
     await waitFor(() => {
       expect(window.location.pathname).toBe('/login');
     });
-    const selectCombobox = screen.getAllByRole('combobox')[0];
-    fireEvent.change(selectCombobox, { target: { value: 'e_deudor' } });
+    const studentSelect = container.querySelector('[data-cy="student-select"]');
+    fireEvent.change(studentSelect, { target: { value: 'e_deudor' } });
 
-    const ingresarBtn = screen.getAllByRole('button', { name: /Ingresar/ })[0];
+    const ingresarBtn = container.querySelector('[data-cy="student-login-button"]');
     fireEvent.click(ingresarBtn);
 
     // Esperar a que cargue la vista de estudiante
-    expect(await screen.findByText('🎓 Expediente Alumno')).toBeInTheDocument();
+    expect(await screen.findByText('Expediente Alumno')).toBeInTheDocument();
 
     // Validar que se muestre la advertencia
-    expect(screen.getByText('DEUDAS PENDIENTES')).toBeInTheDocument();
+    expect(screen.getByText(/DEUDAS PENDIENTES/i)).toBeInTheDocument();
   });
 
   // Escenario 4: Datos inconsistentes
