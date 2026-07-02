@@ -215,7 +215,7 @@ export const StudentDashboard = ({
             }}
           >
             <span>🎓</span>
-            <span>Expediente Académico</span>
+            <span>Expediente Alumno</span>
           </button>
 
           <button
@@ -338,16 +338,19 @@ export const StudentDashboard = ({
                   </p>
                 </div>
 
-                <span style={{
-                  padding: '6px 14px',
-                  borderRadius: '8px',
-                  fontWeight: 'bold',
-                  fontSize: '0.9rem',
-                  border: '1px solid',
-                  backgroundColor: totalCreditos >= 12 && totalCreditos <= 25 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(244, 63, 94, 0.15)',
-                  borderColor: totalCreditos >= 12 && totalCreditos <= 25 ? '#10b981' : '#f43f5e',
-                  color: totalCreditos >= 12 && totalCreditos <= 25 ? '#34d399' : '#fca5a5'
-                }}>
+                <span 
+                  data-cy="credits-counter"
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '8px',
+                    fontWeight: 'bold',
+                    fontSize: '0.9rem',
+                    border: '1px solid',
+                    backgroundColor: totalCreditos >= 12 && totalCreditos <= 25 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(244, 63, 94, 0.15)',
+                    borderColor: totalCreditos >= 12 && totalCreditos <= 25 ? '#10b981' : '#f43f5e',
+                    color: totalCreditos >= 12 && totalCreditos <= 25 ? '#34d399' : '#f87171'
+                  }}
+                >
                   Créditos Seleccionados: {totalCreditos}
                 </span>
               </div>
@@ -395,6 +398,7 @@ export const StudentDashboard = ({
                               checked={isSelected}
                               onChange={() => onToggleSeccion(sec._id)}
                               disabled={estudianteActivo.estadoMatricula === 'Matriculado'}
+                              data-cy={`section-checkbox-${sec.codigo}`}
                               style={{ transform: 'scale(1.25)', cursor: 'pointer', accentColor: '#10b981' }}
                             />
                             <div>
@@ -482,6 +486,7 @@ export const StudentDashboard = ({
                 <button
                   onClick={onMatricularse}
                   disabled={loading || estudianteActivo.estadoMatricula === 'Matriculado'}
+                  data-cy="confirm-matricula-button"
                   className="btn-cyber-primary"
                   style={{
                     flexGrow: 1,
@@ -498,6 +503,7 @@ export const StudentDashboard = ({
                 <button
                   onClick={onAutoMatriculaAsistente}
                   disabled={loadingAsistente || estudianteActivo.estadoMatricula === 'Matriculado'}
+                  data-cy="genetic-assistant-button"
                   style={{
                     padding: '14px 24px',
                     borderRadius: '10px',

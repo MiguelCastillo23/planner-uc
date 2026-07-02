@@ -2,6 +2,7 @@ import { defineConfig } from 'cypress';
 import cypressMochawesomeReporterPlugin from 'cypress-mochawesome-reporter/plugin.js';
 
 export default defineConfig({
+  allowCypressEnv: false,
   reporter: 'cypress-mochawesome-reporter',
   reporterOptions: {
     reportDir: 'cypress/reports',

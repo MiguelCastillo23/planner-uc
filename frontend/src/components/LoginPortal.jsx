@@ -40,43 +40,216 @@ export const LoginPortal = ({
   const isDocenteRoute = rutaActual === '/login/docente';
   const isEstudianteRoute = rutaActual === '/login/estudiante';
 
-  // 1. VISTA DE PORTAL DE SELECCIÓN DE PERFIL
+  // Renderizadores de Formularios
+  const renderAdminForm = () => (
+    <form onSubmit={handleAdminSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>Usuario Administrador</label>
+        <input 
+          type="text" 
+          placeholder="Ej. admin" 
+          value={adminUser}
+          onChange={(e) => setAdminUser(e.target.value)}
+          data-cy="admin-user-input"
+          style={{
+            padding: '11px 14px',
+            borderRadius: '8px',
+            backgroundColor: '#0c1222',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            color: '#fff',
+            fontSize: '0.85rem',
+            outline: 'none'
+          }}
+          onFocus={(e) => e.target.style.borderColor = '#38bdf8'}
+          onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)'}
+        />
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>Contraseña</label>
+        <input 
+          type="password" 
+          placeholder="Ej. admin" 
+          value={adminPass}
+          onChange={(e) => setAdminPass(e.target.value)}
+          data-cy="admin-pass-input"
+          style={{
+            padding: '11px 14px',
+            borderRadius: '8px',
+            backgroundColor: '#0c1222',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            color: '#fff',
+            fontSize: '0.85rem',
+            outline: 'none'
+          }}
+          onFocus={(e) => e.target.style.borderColor = '#38bdf8'}
+          onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)'}
+        />
+      </div>
+      {errorAdmin && <span style={{ color: '#f43f5e', fontSize: '0.75rem', fontWeight: '600' }}>⚠️ {errorAdmin}</span>}
+      
+      <button 
+        type="submit"
+        data-cy="admin-login-button"
+        className="btn-cyber-primary"
+        style={{
+          padding: '12px',
+          borderRadius: '8px',
+          cursor: 'pointer',
+          fontSize: '0.85rem',
+          marginTop: '5px'
+        }}
+      >
+        Iniciar Sesión
+      </button>
+    </form>
+  );
+
+  const renderDocenteForm = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>Seleccione su Nombre</label>
+        <select
+          value={selectedDocenteId}
+          onChange={(e) => setSelectedDocenteId(e.target.value)}
+          data-cy="docente-select"
+          style={{
+            padding: '11px 14px',
+            borderRadius: '8px',
+            backgroundColor: '#0c1222',
+            color: '#cbd5e1',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            fontSize: '0.85rem',
+            cursor: 'pointer',
+            outline: 'none'
+          }}
+          onFocus={(e) => e.target.style.borderColor = '#c084fc'}
+          onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)'}
+        >
+          {docentesDisponibles.length === 0 ? (
+            <option value="">Cargando docentes...</option>
+          ) : (
+            <>
+              <option value="">Seleccione docente...</option>
+              {docentesDisponibles.map(doc => (
+                <option key={doc._id} value={doc._id}>{doc.nombre}</option>
+              ))}
+            </>
+          )}
+        </select>
+      </div>
+
+      <button
+        onClick={handleDocenteLogin}
+        disabled={!selectedDocenteId}
+        data-cy="docente-login-button"
+        style={{
+          padding: '12px',
+          borderRadius: '8px',
+          border: 'none',
+          background: 'linear-gradient(135deg, #c084fc 0%, #8b5cf6 100%)',
+          color: '#000',
+          fontWeight: '800',
+          cursor: 'pointer',
+          fontSize: '0.85rem',
+          opacity: selectedDocenteId ? 1 : 0.5,
+          boxShadow: selectedDocenteId ? '0 4px 12px rgba(139, 92, 246, 0.25)' : 'none'
+        }}
+      >
+        Iniciar Simulación Docente
+      </button>
+    </div>
+  );
+
+  const renderStudentForm = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>Seleccione su Nombre</label>
+        <select
+          value={selectedStudentId}
+          onChange={(e) => setSelectedStudentId(e.target.value)}
+          data-cy="student-select"
+          style={{
+            padding: '11px 14px',
+            borderRadius: '8px',
+            backgroundColor: '#0c1222',
+            color: '#cbd5e1',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            fontSize: '0.85rem',
+            cursor: 'pointer',
+            outline: 'none'
+          }}
+          onFocus={(e) => e.target.style.borderColor = '#10b981'}
+          onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)'}
+        >
+          {estudiantesSimulados.length === 0 ? (
+            <option value="">Cargando estudiantes...</option>
+          ) : (
+            <>
+              <option value="">Seleccione estudiante...</option>
+              {estudiantesSimulados.map(est => (
+                <option key={est._id} value={est._id}>{est.nombre}</option>
+              ))}
+            </>
+          )}
+        </select>
+      </div>
+
+      <button
+        onClick={handleStudentLogin}
+        disabled={!selectedStudentId}
+        data-cy="student-login-button"
+        style={{
+          padding: '12px',
+          borderRadius: '8px',
+          border: 'none',
+          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+          color: '#000',
+          fontWeight: '800',
+          cursor: 'pointer',
+          fontSize: '0.85rem',
+          opacity: selectedStudentId ? 1 : 0.5,
+          boxShadow: selectedStudentId ? '0 4px 12px rgba(16, 185, 129, 0.25)' : 'none'
+        }}
+      >
+        Iniciar Simulación Alumno
+      </button>
+    </div>
+  );
+
+  // 1. VISTA DE PORTAL DE SELECCIÓN DE PERFIL CON FORMULARIOS INTEGRADOS (Vista general /login)
   if (isPortal) {
     const rolesCards = [
       {
         title: "Administrador",
         desc: "Acceso para el personal de control académico. Gestione la infraestructura de la universidad y ejecute el algoritmo genético para la distribución horaria global.",
         icon: "🛠️",
-        path: "/login/admin",
         glowColor: "rgba(56, 189, 248, 0.4)",
-        gradient: "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)",
-        borderColor: "rgba(56, 189, 248, 0.15)"
+        borderColor: "rgba(56, 189, 248, 0.15)",
+        formRenderer: renderAdminForm
       },
       {
         title: "Profesor / Docente",
         desc: "Acceso para docentes asignados. Registre sus restricciones de disponibilidad semanal y visualice sus agendas académicas y listas de alumnos matriculados.",
         icon: "👩‍🏫",
-        path: "/login/docente",
         glowColor: "rgba(167, 139, 250, 0.4)",
-        gradient: "linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)",
-        borderColor: "rgba(167, 139, 250, 0.15)"
+        borderColor: "rgba(167, 139, 250, 0.15)",
+        formRenderer: renderDocenteForm
       },
       {
         title: "Estudiante de Pregrado",
         desc: "Acceso para alumnos regulares. Realice su matrícula asistida con el asesor genético de horario, solicite reservas o retiros y verifique su avance de créditos.",
         icon: "🎓",
-        path: "/login/estudiante",
         glowColor: "rgba(16, 185, 129, 0.4)",
-        gradient: "linear-gradient(135deg, #059669 0%, #047857 100%)",
-        borderColor: "rgba(16, 185, 129, 0.15)"
+        borderColor: "rgba(16, 185, 129, 0.15)",
+        formRenderer: renderStudentForm
       }
     ];
 
     return (
-      <div style={{ padding: '40px 20px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ padding: '40px 20px', maxWidth: '1250px', margin: '0 auto' }}>
         
         {/* Cabecera del Portal */}
-        <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '45px' }}>
           <h1 style={{
             fontSize: '3rem',
             margin: '0 0 10px 0',
@@ -92,25 +265,23 @@ export const LoginPortal = ({
             }}>Inteligente</span>
           </h1>
           <p style={{ fontSize: '1rem', color: '#94a3b8', margin: '0 auto', maxWidth: '600px', lineHeight: '1.6' }}>
-            Bienvenido al portal de simulación académica. Por favor, seleccione su perfil institucional para ingresar a la plataforma y gestionar sus procesos.
+            Bienvenido al portal de simulación académica. Ingrese sus credenciales o seleccione su perfil de simulación para ingresar.
           </p>
         </div>
 
-        {/* Tarjetas de Selección de Perfil */}
+        {/* Tarjetas de Selección de Perfil y Formularios */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '30px', margin: '0 auto' }}>
           {rolesCards.map((role, idx) => (
             <div 
               key={idx}
               className="glass-panel"
-              onClick={() => onNavegar(role.path)}
               style={{
                 padding: '35px 25px',
-                cursor: 'pointer',
                 textAlign: 'left',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                minHeight: '320px',
+                minHeight: '480px',
                 transition: 'all 0.3s ease',
                 border: `1px solid ${role.borderColor}`
               }}
@@ -130,23 +301,13 @@ export const LoginPortal = ({
                 <h3 style={{ fontSize: '1.4rem', color: '#f8fafc', margin: '0 0 10px 0', fontWeight: '800' }}>
                   {role.title}
                 </h3>
-                <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.5', margin: 0 }}>
+                <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.5', margin: '0 0 25px 0' }}>
                   {role.desc}
                 </p>
               </div>
 
-              <div style={{
-                marginTop: '20px',
-                padding: '10px 14px',
-                borderRadius: '8px',
-                background: role.gradient,
-                color: '#fff',
-                fontSize: '0.85rem',
-                fontWeight: 'bold',
-                textAlign: 'center',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-              }}>
-                Ingresar como {role.title.split(' ')[0]}
+              <div style={{ marginTop: 'auto' }}>
+                {role.formRenderer()}
               </div>
             </div>
           ))}
@@ -160,7 +321,7 @@ export const LoginPortal = ({
     );
   }
 
-  // 2. VISTAS DE LOGINS INDIVIDUALES
+  // 2. VISTAS DE LOGINS INDIVIDUALES (Si se accede directamente a sub-rutas como /login/admin, /login/estudiante, etc.)
   return (
     <div style={{
       display: 'flex',
@@ -197,164 +358,10 @@ export const LoginPortal = ({
           </p>
         </div>
 
-        {/* Formulario Administrador */}
-        {isAdminRoute && (
-          <form onSubmit={handleAdminSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>Usuario Administrador</label>
-              <input 
-                type="text" 
-                placeholder="Ej. admin" 
-                value={adminUser}
-                onChange={(e) => setAdminUser(e.target.value)}
-                style={{
-                  padding: '11px 14px',
-                  borderRadius: '8px',
-                  backgroundColor: '#0c1222',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  color: '#fff',
-                  fontSize: '0.85rem',
-                  outline: 'none'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#38bdf8'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)'}
-              />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>Contraseña</label>
-              <input 
-                type="password" 
-                placeholder="Ej. admin" 
-                value={adminPass}
-                onChange={(e) => setAdminPass(e.target.value)}
-                style={{
-                  padding: '11px 14px',
-                  borderRadius: '8px',
-                  backgroundColor: '#0c1222',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  color: '#fff',
-                  fontSize: '0.85rem',
-                  outline: 'none'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#38bdf8'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)'}
-              />
-            </div>
-            {errorAdmin && <span style={{ color: '#f43f5e', fontSize: '0.75rem', fontWeight: '600' }}>⚠️ {errorAdmin}</span>}
-            
-            <button 
-              type="submit"
-              className="btn-cyber-primary"
-              style={{
-                padding: '12px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '0.85rem',
-                marginTop: '5px'
-              }}
-            >
-              Iniciar Sesión
-            </button>
-          </form>
-        )}
-
-        {/* Selector Docente */}
-        {isDocenteRoute && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>Seleccione su Nombre</label>
-              <select
-                value={selectedDocenteId}
-                onChange={(e) => setSelectedDocenteId(e.target.value)}
-                style={{
-                  padding: '11px 14px',
-                  borderRadius: '8px',
-                  backgroundColor: '#0c1222',
-                  color: '#cbd5e1',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  outline: 'none'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#c084fc'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)'}
-              >
-                <option value="">Seleccione docente...</option>
-                {docentesDisponibles.map(doc => (
-                  <option key={doc._id} value={doc._id}>{doc.nombre}</option>
-                ))}
-              </select>
-            </div>
-
-            <button
-              onClick={handleDocenteLogin}
-              disabled={!selectedDocenteId}
-              style={{
-                padding: '12px',
-                borderRadius: '8px',
-                border: 'none',
-                background: 'linear-gradient(135deg, #c084fc 0%, #8b5cf6 100%)',
-                color: '#000',
-                fontWeight: '800',
-                cursor: 'pointer',
-                fontSize: '0.85rem',
-                opacity: selectedDocenteId ? 1 : 0.5,
-                boxShadow: selectedDocenteId ? '0 4px 12px rgba(139, 92, 246, 0.25)' : 'none'
-              }}
-            >
-              Iniciar Simulación Docente
-            </button>
-          </div>
-        )}
-
-        {/* Selector Estudiante */}
-        {isEstudianteRoute && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>Seleccione su Nombre</label>
-              <select
-                value={selectedStudentId}
-                onChange={(e) => setSelectedStudentId(e.target.value)}
-                style={{
-                  padding: '11px 14px',
-                  borderRadius: '8px',
-                  backgroundColor: '#0c1222',
-                  color: '#cbd5e1',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  outline: 'none'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#10b981'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)'}
-              >
-                <option value="">Seleccione estudiante...</option>
-                {estudiantesSimulados.map(est => (
-                  <option key={est._id} value={est._id}>{est.nombre} ({est.codigo})</option>
-                ))}
-              </select>
-            </div>
-
-            <button
-              onClick={handleStudentLogin}
-              disabled={!selectedStudentId}
-              style={{
-                padding: '12px',
-                borderRadius: '8px',
-                border: 'none',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: '#000',
-                fontWeight: '800',
-                cursor: 'pointer',
-                fontSize: '0.85rem',
-                opacity: selectedStudentId ? 1 : 0.5,
-                boxShadow: selectedStudentId ? '0 4px 12px rgba(16, 185, 129, 0.25)' : 'none'
-              }}
-            >
-              Iniciar Simulación Alumno
-            </button>
-          </div>
-        )}
+        {/* Formularios Específicos */}
+        {isAdminRoute && renderAdminForm()}
+        {isDocenteRoute && renderDocenteForm()}
+        {isEstudianteRoute && renderStudentForm()}
 
         {/* Botón Volver */}
         <button
@@ -382,3 +389,4 @@ export const LoginPortal = ({
     </div>
   );
 };
+
